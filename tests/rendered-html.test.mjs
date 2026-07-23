@@ -2,17 +2,20 @@ import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
+async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
+  workerUrl.searchParams.set(
+    "test",
+    `${process.pid}-${Date.now()}-${pathname}`,
+  );
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("https://xeno.test/", {
+    new Request(new URL(pathname, "https://portfolio.test"), {
       headers: {
         accept: "text/html",
-        host: "xeno.test",
-        "x-forwarded-host": "xeno.test",
+        host: "portfolio.test",
+        "x-forwarded-host": "portfolio.test",
         "x-forwarded-proto": "https",
       },
     }),
@@ -28,21 +31,29 @@ async function render() {
   );
 }
 
-test("server-renders the observatory shell and site metadata", async () => {
+test("server-renders Josh McLain's portfolio and site metadata", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /Xenobiology Observatory/);
-  assert.match(html, /I build digital/);
-  assert.match(html, /Selected transmissions/);
+  assert.match(html, /Josh McLain/);
+  assert.match(html, /I build web/);
+  assert.match(html, /Selected builds/);
   assert.match(html, /Send a signal/);
+  assert.match(html, /me@joshmclain\.com/);
+  assert.match(html, /github\.com\/daemon-node-byte/);
+  assert.match(html, /linkedin\.com\/in\/joshmclain45/);
+  assert.match(html, /crispy-happiness-gilt\.vercel\.app/);
+  assert.match(html, /react-icons|Source code/i);
   assert.match(
     html,
-    /<meta[^>]+property="og:image"[^>]+content="https:\/\/xeno\.test\/og\.png"/i,
+    /<meta[^>]+property="og:image"[^>]+content="https:\/\/portfolio\.test\/og\.png"/i,
   );
-  assert.doesNotMatch(html, /codex-preview|Your site is taking shape/i);
+  assert.doesNotMatch(
+    html,
+    /Xenobiology Observatory|hello@xenobiology|codex-preview|Your site is taking shape/i,
+  );
 });
 
 test("renders every navigation destination as a semantic section", async () => {
@@ -57,6 +68,29 @@ test("renders every navigation destination as a semantic section", async () => {
 
   assert.match(html, /Skip cinematic introduction/);
   assert.match(css, /prefers-reduced-motion/);
+});
+
+test("builds the field-notes index and dynamic article routes from Markdown", async () => {
+  const slugs = [
+    "designing-interfaces-that-feel-discovered",
+    "the-useful-friction-of-unfamiliar-worlds",
+    "light-as-an-interaction-material",
+  ];
+  const indexResponse = await render("/field-notes");
+  assert.equal(indexResponse.status, 200);
+  const indexHtml = await indexResponse.text();
+
+  for (const slug of slugs) {
+    assert.match(indexHtml, new RegExp(`/field-notes/${slug}`));
+    const articleResponse = await render(`/field-notes/${slug}`);
+    assert.equal(articleResponse.status, 200);
+    const articleHtml = await articleResponse.text();
+    assert.match(articleHtml, /All field notes/);
+    assert.match(articleHtml, /Josh McLain/);
+  }
+
+  assert.match(indexHtml, /Notes from/);
+  assert.match(indexHtml, /Designing interfaces that feel discovered/);
 });
 
 test("ships paired 2K surface and terrain maps for every world and moon", async () => {

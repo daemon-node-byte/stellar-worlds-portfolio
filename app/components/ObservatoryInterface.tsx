@@ -1,14 +1,18 @@
 "use client";
 
+import Link from "next/link";
+import type { FieldNoteSummary } from "../data/fieldNoteTypes";
 import {
-  fieldNotes,
   portfolioSections,
   selectedProjects,
   type PortfolioSectionId,
 } from "../data/portfolioContent";
+import { ProjectCard } from "./ProjectCard";
+import { SocialLinks } from "./SocialLinks";
 
 type ObservatoryInterfaceProps = {
   activeSection: PortfolioSectionId;
+  fieldNotes: readonly FieldNoteSummary[];
   onNavigate: (sectionId: PortfolioSectionId) => void;
 };
 
@@ -18,18 +22,18 @@ function OriginSection({
   return (
     <div className="section-content section-content--hero">
       <p className="eyebrow">
-        <span>Signal 01</span>
-        Portfolio / 2026
+        <span>Josh Codes</span>
+        Full-stack portfolio / 2026
       </p>
       <h1>
-        I build digital
+        I build web
         <br />
-        worlds <em>with a pulse.</em>
+        experiences <em>with a pulse.</em>
       </h1>
       <div className="hero-footer">
         <p className="section-intro">
-          A creative developer shaping strange interfaces, tactile systems, and
-          cinematic experiences.
+          I&apos;m Josh McLain, a full-stack web developer shaping useful
+          products, expressive interfaces, and cinematic digital worlds.
         </p>
         <button
           className="descent-control"
@@ -51,30 +55,30 @@ function AboutSection() {
         <span>Specimen 02</span>
         Virelia / About
       </p>
-      <h2>Built between systems and stories.</h2>
+      <h2>Full-stack thinking. Front-end craft.</h2>
       <div className="section-copy">
         <p>
-          I work where product thinking, visual design, and engineering overlap.
-          The goal is not novelty for its own sake—it is making digital work feel
-          unmistakably alive.
+          I&apos;m a Phoenix-based software engineer with five-plus years of
+          professional experience building across the stack and mentoring other
+          developers.
         </p>
         <p>
-          From early concept to the final interaction pass, I translate complex
-          ideas into experiences with clarity, atmosphere, and a point of view.
+          I turn complex ideas into maintainable web products—combining product
+          judgment, dependable engineering, and a visual point of view.
         </p>
       </div>
       <dl className="capability-list">
         <div>
           <dt>01</dt>
-          <dd>Creative development</dd>
+          <dd>Full-stack web applications</dd>
         </div>
         <div>
           <dt>02</dt>
-          <dd>Interactive systems</dd>
+          <dd>Interactive interfaces and 3D</dd>
         </div>
         <div>
           <dt>03</dt>
-          <dd>Visual direction</dd>
+          <dd>Automation and AI systems</dd>
         </div>
       </dl>
     </div>
@@ -89,35 +93,20 @@ function ProjectsSection() {
           <span>Specimen 03</span>
           Khepri / Selected work
         </p>
-        <h2>Selected transmissions.</h2>
+        <h2>Selected builds.</h2>
       </div>
       <div className="project-grid">
         {selectedProjects.map((project) => (
-          <article className="project-card" key={project.name}>
-            <div className="project-card__meta">
-              <span>{project.index}</span>
-              <span>{project.year}</span>
-            </div>
-            <div>
-              <p>{project.type}</p>
-              <h3>{project.name}</h3>
-              <p className="project-card__description">
-                {project.description}
-              </p>
-            </div>
-            <ul aria-label={`${project.name} disciplines`}>
-              {project.tags.map((tag) => (
-                <li key={tag}>{tag}</li>
-              ))}
-            </ul>
-          </article>
+          <ProjectCard project={project} key={project.name} />
         ))}
       </div>
     </div>
   );
 }
 
-function NotesSection() {
+function NotesSection({
+  fieldNotes,
+}: Pick<ObservatoryInterfaceProps, "fieldNotes">) {
   return (
     <div className="section-content section-content--right">
       <p className="eyebrow">
@@ -127,16 +116,21 @@ function NotesSection() {
       <h2>Notes from the edge.</h2>
       <div className="notes-list">
         {fieldNotes.map((note, index) => (
-          <article key={note.title}>
-            <div>
-              <span>{note.date}</span>
-              <span>{note.category}</span>
-            </div>
-            <h3>{note.title}</h3>
-            <span aria-hidden="true">0{index + 1} ↗</span>
-          </article>
+          <Link href={`/field-notes/${note.slug}`} key={note.slug}>
+            <article>
+              <div>
+                <span>{note.displayDate}</span>
+                <span>{note.category}</span>
+              </div>
+              <h3>{note.title}</h3>
+              <span aria-hidden="true">0{index + 1} ↗</span>
+            </article>
+          </Link>
         ))}
       </div>
+      <Link className="notes-index-link" href="/field-notes">
+        Open the complete field archive <span aria-hidden="true">↗</span>
+      </Link>
     </div>
   );
 }
@@ -151,18 +145,20 @@ function ContactSection() {
       <h2>Send a signal.</h2>
       <p className="contact-copy">
         Have an ambitious idea, a difficult interface, or a world that needs a
-        pulse? I am available for select collaborations.
+        pulse? I&apos;m available for full-stack product work and select
+        collaborations.
       </p>
       <a
         className="contact-link"
-        href="mailto:hello@xenobiology.studio?subject=New%20signal"
+        href="mailto:me@joshmclain.com?subject=Let%27s%20build%20something"
       >
-        <span>hello@xenobiology.studio</span>
+        <span>me@joshmclain.com</span>
         <span aria-hidden="true">↗</span>
       </a>
+      <SocialLinks />
       <div className="contact-meta">
         <span>Transmission window</span>
-        <span>Open / Q3 2026</span>
+        <span>Phoenix, Arizona / Remote</span>
       </div>
     </div>
   );
@@ -170,6 +166,7 @@ function ContactSection() {
 
 export function ObservatoryInterface({
   activeSection,
+  fieldNotes,
   onNavigate,
 }: ObservatoryInterfaceProps) {
   return (
@@ -183,13 +180,13 @@ export function ObservatoryInterface({
           type="button"
           className="wordmark"
           onClick={() => onNavigate("origin")}
-          aria-label="Return to origin"
+          aria-label="Return to Josh McLain home"
         >
-          <span>XO</span>
+          <span>JM</span>
           <span>
-            Xenobiology
+            Josh McLain
             <br />
-            Observatory
+            Full-stack developer
           </span>
         </button>
         <nav aria-label="Portfolio navigation">
@@ -206,15 +203,15 @@ export function ObservatoryInterface({
             </button>
           ))}
         </nav>
-        <div className="system-status" aria-label="System online">
+        <div className="system-status" aria-label="Josh is available">
           <span />
-          System live
+          Available / remote
         </div>
       </header>
 
       <aside className="coordinate-rail" aria-hidden="true">
-        <span>34° 02&apos; 17.1&quot; N</span>
-        <span>118° 14&apos; 37.8&quot; W</span>
+        <span>33° 26&apos; 54.0&quot; N</span>
+        <span>112° 04&apos; 27.0&quot; W</span>
       </aside>
 
       <div className="active-specimen" aria-hidden="true">
@@ -243,7 +240,9 @@ export function ObservatoryInterface({
             ) : null}
             {section.id === "about" ? <AboutSection /> : null}
             {section.id === "projects" ? <ProjectsSection /> : null}
-            {section.id === "notes" ? <NotesSection /> : null}
+            {section.id === "notes" ? (
+              <NotesSection fieldNotes={fieldNotes} />
+            ) : null}
             {section.id === "contact" ? <ContactSection /> : null}
           </section>
         ))}

@@ -1,5 +1,5 @@
 {
-  "name": "xenobiology-observatory",
+  "name": "josh-mclain-portfolio",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -17,10 +17,14 @@
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
     "drizzle-orm": "0.45.2",
+    "gray-matter": "^4.0.3",
     "next": "^16.2.11",
     "postprocessing": "^6.39.3",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "react-icons": "^5.7.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "three": "^0.185.1"
   },
   "devDependencies": {

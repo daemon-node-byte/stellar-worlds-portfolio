@@ -5,6 +5,7 @@ import {
   portfolioSections,
   type PortfolioSectionId,
 } from "../data/portfolioContent";
+import type { FieldNoteSummary } from "../data/fieldNoteTypes";
 import { ObservatoryInterface } from "./ObservatoryInterface";
 import { SceneCanvas } from "./SceneCanvas";
 
@@ -22,7 +23,11 @@ function useReducedMotion() {
   return reducedMotion;
 }
 
-export function StellarExperience() {
+type StellarExperienceProps = {
+  fieldNotes: readonly FieldNoteSummary[];
+};
+
+export function StellarExperience({ fieldNotes }: StellarExperienceProps) {
   const progressRef = useRef(0);
   const reducedMotion = useReducedMotion();
   const [activeSection, setActiveSection] =
@@ -97,6 +102,7 @@ export function StellarExperience() {
       />
       <ObservatoryInterface
         activeSection={activeSection}
+        fieldNotes={fieldNotes}
         onNavigate={handleNavigate}
       />
     </main>

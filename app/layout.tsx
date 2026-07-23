@@ -34,9 +34,9 @@ function getRequestOrigin(requestHeaders: Headers) {
 
 export async function generateMetadata(): Promise<Metadata> {
   const origin = getRequestOrigin(await headers());
-  const title = "Xenobiology Observatory — Creative Developer Portfolio";
+  const title = "Josh McLain — Full-Stack Web Developer";
   const description =
-    "A cinematic journey through strange interfaces, tactile systems, and digital worlds with a pulse.";
+    "Josh McLain builds full-stack web products, expressive interfaces, automation, and cinematic digital experiences.";
 
   return {
     title,
@@ -51,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${origin}/og.png`,
           width: 1200,
           height: 630,
-          alt: "Xenobiology Observatory alien planet",
+          alt: "Josh McLain full-stack web developer portfolio",
         },
       ],
     },

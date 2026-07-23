@@ -33,50 +33,81 @@ export const portfolioSections = [
 
 export type PortfolioSectionId = (typeof portfolioSections)[number]["id"];
 
-export const selectedProjects = [
+export type PortfolioProject = {
+  index: string;
+  year: string;
+  name: string;
+  type: string;
+  description: string;
+  tags: readonly string[];
+  liveUrl?: string;
+  sourceUrl?: string;
+};
+
+export const selectedProjects: readonly PortfolioProject[] = [
   {
     index: "01",
     year: "2026",
-    name: "Palisade",
-    type: "Creative development",
+    name: "Astarot",
+    type: "Full-stack web application",
     description:
-      "A spatial archive that turns cultural research into a navigable, living index.",
-    tags: ["WebGL", "Interaction", "Identity"],
+      "A tarot and astrology experience that turns symbolic systems into an approachable interactive product.",
+    tags: ["Next.js", "Python", "Product"],
+    liveUrl: "https://crispy-happiness-gilt.vercel.app",
+    sourceUrl: "https://github.com/daemon-node-byte/crispy-happiness",
   },
   {
     index: "02",
-    year: "2025",
-    name: "Substrate",
-    type: "Product system",
+    year: "2026",
+    name: "Ableton MCP",
+    type: "Creative developer tooling",
     description:
-      "An adaptive intelligence workspace built around calm focus and material depth.",
-    tags: ["Product", "Systems", "Motion"],
+      "A local bridge that lets intelligent tools communicate with Ableton Live for exploratory music workflows.",
+    tags: ["Python", "MCP", "Automation"],
+    sourceUrl: "https://github.com/daemon-node-byte/ableton_mcp",
   },
   {
     index: "03",
-    year: "2025",
-    name: "Afterlight",
-    type: "Digital installation",
+    year: "2026",
+    name: "TS Env Validator",
+    type: "Open-source utility",
     description:
-      "A generative memorial where fragmented signals resolve into shared constellations.",
-    tags: ["Generative", "3D", "Narrative"],
+      "A small, type-safe environment validation layer for Node.js and Next.js applications.",
+    tags: ["TypeScript", "Node.js", "DX"],
+    sourceUrl: "https://github.com/daemon-node-byte/ts-env-validator",
   },
 ] as const;
 
-export const fieldNotes = [
+export type SocialProfileId = "github" | "linkedin" | "facebook" | "x";
+
+export const socialProfiles: readonly {
+  id: SocialProfileId;
+  label: string;
+  handle: string;
+  url: string;
+}[] = [
   {
-    date: "06.18.26",
-    title: "Designing interfaces that feel discovered",
-    category: "Field study",
+    id: "github",
+    label: "GitHub",
+    handle: "daemon-node-byte",
+    url: "https://github.com/daemon-node-byte",
   },
   {
-    date: "04.02.26",
-    title: "The useful friction of unfamiliar worlds",
-    category: "Process",
+    id: "linkedin",
+    label: "LinkedIn",
+    handle: "joshmclain45",
+    url: "https://www.linkedin.com/in/joshmclain45",
   },
   {
-    date: "01.27.26",
-    title: "Light as an interaction material",
-    category: "Rendering",
+    id: "facebook",
+    label: "Facebook",
+    handle: "joshmclain45",
+    url: "https://www.facebook.com/joshmclain45",
+  },
+  {
+    id: "x",
+    label: "X / Twitter",
+    handle: "@daemon_node",
+    url: "https://x.com/daemon_node",
   },
 ] as const;
