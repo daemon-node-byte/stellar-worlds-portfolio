@@ -22,35 +22,35 @@ const palettes: Record<string, PlanetPalette> = {
     mid: "#31462a",
     high: "#9dad55",
     accent: "#d8ff45",
-    atmosphere: "#c6ff68",
+    atmosphere: "#a9b98a",
   },
   virelia: {
     low: "#07141a",
     mid: "#174b49",
     high: "#73a995",
     accent: "#ffb35c",
-    atmosphere: "#6dfbd4",
+    atmosphere: "#88bfb3",
   },
   khepri: {
     low: "#120b08",
     mid: "#4d2519",
     high: "#bd7650",
     accent: "#ffb35c",
-    atmosphere: "#ff8a4c",
+    atmosphere: "#c58964",
   },
   calyx: {
     low: "#090b16",
     mid: "#262c52",
     high: "#7988b3",
     accent: "#d8ff45",
-    atmosphere: "#a8c5ff",
+    atmosphere: "#8895ad",
   },
   nox: {
     low: "#070707",
     mid: "#26231e",
     high: "#777161",
     accent: "#d8ff45",
-    atmosphere: "#e6ff95",
+    atmosphere: "#b5b6a7",
   },
 };
 
@@ -109,7 +109,10 @@ export function SpaceScene({
         albedoMap="/textures/planets/signal-albedo.jpg"
         heightMap="/textures/planets/signal-height.jpg"
         rotationSpeed={0.026}
-        moon
+        moon={{
+          albedoMap: "/textures/planets/signal-moon-albedo.jpg",
+          heightMap: "/textures/planets/signal-moon-height.jpg",
+        }}
       />
       <Planet
         position={[-4.1, -14.8, -8.4]}
@@ -129,7 +132,10 @@ export function SpaceScene({
         albedoMap="/textures/planets/khepri-albedo.jpg"
         heightMap="/textures/planets/khepri-height.jpg"
         rotationSpeed={0.017}
-        moon
+        moon={{
+          albedoMap: "/textures/planets/khepri-moon-albedo.jpg",
+          heightMap: "/textures/planets/khepri-moon-height.jpg",
+        }}
       />
       <OrbitalDebris
         position={[4.9, -29.3, -10.5]}

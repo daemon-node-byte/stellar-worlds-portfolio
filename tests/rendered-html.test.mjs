@@ -59,8 +59,16 @@ test("renders every navigation destination as a semantic section", async () => {
   assert.match(css, /prefers-reduced-motion/);
 });
 
-test("ships paired 2K surface and terrain maps for every world", async () => {
-  const worlds = ["signal", "virelia", "khepri", "calyx", "nox"];
+test("ships paired 2K surface and terrain maps for every world and moon", async () => {
+  const worlds = [
+    "signal",
+    "virelia",
+    "khepri",
+    "calyx",
+    "nox",
+    "signal-moon",
+    "khepri-moon",
+  ];
 
   for (const world of worlds) {
     const [albedo, height] = await Promise.all([

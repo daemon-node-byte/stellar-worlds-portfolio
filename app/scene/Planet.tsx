@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import type { PlanetPalette } from "./sceneTypes";
+import { Moon } from "./Moon";
+import type { MoonSurface, PlanetPalette } from "./sceneTypes";
 
 const atmosphereVertexShader = `
   varying vec3 vNormal;
@@ -20,7 +21,7 @@ const atmosphereFragmentShader = `
   varying vec3 vNormal;
 
   void main() {
-    float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 3.2);
+    float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 4.4);
     gl_FragColor = vec4(glowColor, fresnel * intensity);
   }
 `;
@@ -34,7 +35,7 @@ type PlanetProps = {
   heightMap: string;
   rotationSpeed?: number;
   ring?: boolean;
-  moon?: boolean;
+  moon?: MoonSurface;
 };
 
 export function Planet({
@@ -46,7 +47,7 @@ export function Planet({
   heightMap,
   rotationSpeed = 0.025,
   ring = false,
-  moon = false,
+  moon,
 }: PlanetProps) {
   const groupRef = useRef<THREE.Group>(null);
   const cloudRef = useRef<THREE.Mesh>(null);
@@ -58,7 +59,7 @@ export function Planet({
   const atmosphereUniforms = useMemo(
     () => ({
       glowColor: { value: new THREE.Color(palette.atmosphere) },
-      intensity: { value: 0.72 },
+      intensity: { value: 0.27 },
     }),
     [palette.atmosphere],
   );
@@ -111,7 +112,7 @@ export function Planet({
 
       <mesh
         ref={cloudRef}
-        scale={1.018}
+        scale={1.012}
         rotation={[0.08, seed * 0.12, 0]}
       >
         <sphereGeometry args={[radius, 72, 72]} />
@@ -119,13 +120,13 @@ export function Planet({
           map={surfaceTexture}
           color={palette.atmosphere}
           transparent
-          opacity={0.075}
-          blending={THREE.AdditiveBlending}
+          opacity={0.025}
+          blending={THREE.NormalBlending}
           depthWrite={false}
         />
       </mesh>
 
-      <mesh scale={1.085}>
+      <mesh scale={1.055}>
         <sphereGeometry args={[radius, 72, 72]} />
         <shaderMaterial
           uniforms={atmosphereUniforms}
@@ -155,25 +156,12 @@ export function Planet({
       ) : null}
 
       {moon ? (
-        <group rotation={[0.35, 0.1, 0.55]}>
-          <mesh castShadow position={[radius * 1.75, 0, 0]}>
-            <icosahedronGeometry args={[radius * 0.16, 3]} />
-            <meshStandardMaterial
-              color={palette.high}
-              roughness={0.92}
-              bumpMap={terrainTexture}
-              bumpScale={0.035}
-            />
-          </mesh>
-          <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[radius * 1.75, 0.006, 6, 180]} />
-            <meshBasicMaterial
-              color={palette.accent}
-              transparent
-              opacity={0.18}
-            />
-          </mesh>
-        </group>
+        <Moon
+          orbitRadius={radius * 1.75}
+          orbitColor={palette.accent}
+          radius={radius * 0.16}
+          surface={moon}
+        />
       ) : null}
     </group>
   );

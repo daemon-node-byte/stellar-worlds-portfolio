@@ -9,3 +9,8 @@ export type PlanetPalette = {
   accent: string;
   atmosphere: string;
 };
+
+export type MoonSurface = {
+  albedoMap: string;
+  heightMap: string;
+};

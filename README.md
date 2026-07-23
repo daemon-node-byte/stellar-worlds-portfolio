@@ -37,8 +37,9 @@ Example: tune a planet's palette or orbital details in `SpaceScene.tsx` without
 changing the navigation.
 
 The generated albedo and terrain-height assets live in
-`public/textures/planets/`. Each world uses one `*-albedo.jpg` map for visible
-surface color and one `*-height.jpg` map for bump and vertex displacement.
+`public/textures/planets/`. Each world and textured moon uses one
+`*-albedo.jpg` map for visible surface color and one `*-height.jpg` map for
+bump and vertex displacement.
 
 ### Content layer
 
