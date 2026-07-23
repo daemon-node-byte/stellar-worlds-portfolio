@@ -106,6 +106,8 @@ export function SpaceScene({
         radius={3.4}
         seed={1.4}
         palette={palettes.signal}
+        albedoMap="/textures/planets/signal-albedo.jpg"
+        heightMap="/textures/planets/signal-height.jpg"
         rotationSpeed={0.026}
         moon
       />
@@ -114,6 +116,8 @@ export function SpaceScene({
         radius={3.15}
         seed={2.8}
         palette={palettes.virelia}
+        albedoMap="/textures/planets/virelia-albedo.jpg"
+        heightMap="/textures/planets/virelia-height.jpg"
         rotationSpeed={0.021}
         ring
       />
@@ -122,6 +126,8 @@ export function SpaceScene({
         radius={4.15}
         seed={5.2}
         palette={palettes.khepri}
+        albedoMap="/textures/planets/khepri-albedo.jpg"
+        heightMap="/textures/planets/khepri-height.jpg"
         rotationSpeed={0.017}
         moon
       />
@@ -135,6 +141,8 @@ export function SpaceScene({
         radius={2.9}
         seed={8.6}
         palette={palettes.calyx}
+        albedoMap="/textures/planets/calyx-albedo.jpg"
+        heightMap="/textures/planets/calyx-height.jpg"
         rotationSpeed={0.034}
         ring
       />
@@ -143,6 +151,8 @@ export function SpaceScene({
         radius={3.8}
         seed={13.1}
         palette={palettes.nox}
+        albedoMap="/textures/planets/nox-albedo.jpg"
+        heightMap="/textures/planets/nox-height.jpg"
         rotationSpeed={0.015}
       />
 

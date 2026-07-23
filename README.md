@@ -7,7 +7,8 @@ Field Notes, and Contact.
 ## Experience
 
 - Scroll-controlled camera travel with smooth cinematic interpolation
-- Five procedurally textured worlds with real displacement and bump detail
+- Five original 2K equirectangular surface maps with matching displacement and
+  bump detail
 - Dynamic shadow-casting lights, atmospheres, rings, moons, and orbital debris
 - Bloom, chromatic aberration, grain, and vignette post-processing
 - Responsive editorial interface with keyboard navigation and reduced-motion
@@ -27,13 +28,17 @@ its content in `ObservatoryInterface.tsx`.
 
 ### Scene layer
 
-`app/scene/` owns camera choreography, procedural planet materials, lighting,
+`app/scene/` owns camera choreography, image-based planet materials, lighting,
 particles, and post-processing. Scene components depend on React Three Fiber,
 Three.js, and React Postprocessing. They do not depend on page markup or
 portfolio copy.
 
 Example: tune a planet's palette or orbital details in `SpaceScene.tsx` without
 changing the navigation.
+
+The generated albedo and terrain-height assets live in
+`public/textures/planets/`. Each world uses one `*-albedo.jpg` map for visible
+surface color and one `*-height.jpg` map for bump and vertex displacement.
 
 ### Content layer
 
@@ -70,4 +75,6 @@ The project requires Node.js 22.13 or newer.
 - Update `hello@xenobiology.studio` before using the contact link publicly.
 - Tune world positions, palettes, lights, and effect intensity in
   `app/scene/SpaceScene.tsx`.
+- Replace a world by preserving its paired albedo and height-map filenames in
+  `public/textures/planets/`.
 - Replace `public/og.png` after changing the site's title or visual identity.

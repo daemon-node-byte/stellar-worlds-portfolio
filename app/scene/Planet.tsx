@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { createPlanetTextures } from "./createPlanetTextures";
 import type { PlanetPalette } from "./sceneTypes";
 
 const atmosphereVertexShader = `
@@ -31,6 +30,8 @@ type PlanetProps = {
   radius: number;
   seed: number;
   palette: PlanetPalette;
+  albedoMap: string;
+  heightMap: string;
   rotationSpeed?: number;
   ring?: boolean;
   moon?: boolean;
@@ -41,16 +42,19 @@ export function Planet({
   radius,
   seed,
   palette,
+  albedoMap,
+  heightMap,
   rotationSpeed = 0.025,
   ring = false,
   moon = false,
 }: PlanetProps) {
   const groupRef = useRef<THREE.Group>(null);
   const cloudRef = useRef<THREE.Mesh>(null);
-  const textures = useMemo(
-    () => createPlanetTextures(seed, palette),
-    [palette, seed],
-  );
+  const { gl } = useThree();
+  const [surfaceTexture, terrainTexture] = useLoader(THREE.TextureLoader, [
+    albedoMap,
+    heightMap,
+  ]);
   const atmosphereUniforms = useMemo(
     () => ({
       glowColor: { value: new THREE.Color(palette.atmosphere) },
@@ -60,11 +64,21 @@ export function Planet({
   );
 
   useEffect(
-    () => () => {
-      textures.colorMap.dispose();
-      textures.heightMap.dispose();
+    () => {
+      const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+      surfaceTexture.colorSpace = THREE.SRGBColorSpace;
+      surfaceTexture.wrapS = THREE.RepeatWrapping;
+      surfaceTexture.wrapT = THREE.ClampToEdgeWrapping;
+      surfaceTexture.anisotropy = Math.min(8, maxAnisotropy);
+      surfaceTexture.needsUpdate = true;
+
+      terrainTexture.colorSpace = THREE.NoColorSpace;
+      terrainTexture.wrapS = THREE.RepeatWrapping;
+      terrainTexture.wrapT = THREE.ClampToEdgeWrapping;
+      terrainTexture.anisotropy = Math.min(4, maxAnisotropy);
+      terrainTexture.needsUpdate = true;
     },
-    [textures],
+    [gl, surfaceTexture, terrainTexture],
   );
 
   useFrame((state, delta) => {
@@ -83,12 +97,12 @@ export function Planet({
       <mesh castShadow receiveShadow rotation={[0.12, 0, -0.08]}>
         <sphereGeometry args={[radius, 112, 112]} />
         <meshStandardMaterial
-          map={textures.colorMap}
-          bumpMap={textures.heightMap}
-          bumpScale={radius * 0.065}
-          displacementMap={textures.heightMap}
-          displacementScale={radius * 0.07}
-          displacementBias={-radius * 0.022}
+          map={surfaceTexture}
+          bumpMap={terrainTexture}
+          bumpScale={radius * 0.072}
+          displacementMap={terrainTexture}
+          displacementScale={radius * 0.082}
+          displacementBias={-radius * 0.012}
           roughness={0.82}
           metalness={0.08}
           envMapIntensity={0.35}
@@ -102,7 +116,7 @@ export function Planet({
       >
         <sphereGeometry args={[radius, 72, 72]} />
         <meshBasicMaterial
-          map={textures.colorMap}
+          map={surfaceTexture}
           color={palette.atmosphere}
           transparent
           opacity={0.075}
@@ -147,7 +161,7 @@ export function Planet({
             <meshStandardMaterial
               color={palette.high}
               roughness={0.92}
-              bumpMap={textures.heightMap}
+              bumpMap={terrainTexture}
               bumpScale={0.035}
             />
           </mesh>

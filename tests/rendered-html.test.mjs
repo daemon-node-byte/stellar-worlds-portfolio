@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -57,4 +57,28 @@ test("renders every navigation destination as a semantic section", async () => {
 
   assert.match(html, /Skip cinematic introduction/);
   assert.match(css, /prefers-reduced-motion/);
+});
+
+test("ships paired 2K surface and terrain maps for every world", async () => {
+  const worlds = ["signal", "virelia", "khepri", "calyx", "nox"];
+
+  for (const world of worlds) {
+    const [albedo, height] = await Promise.all([
+      stat(
+        new URL(
+          `../public/textures/planets/${world}-albedo.jpg`,
+          import.meta.url,
+        ),
+      ),
+      stat(
+        new URL(
+          `../public/textures/planets/${world}-height.jpg`,
+          import.meta.url,
+        ),
+      ),
+    ]);
+
+    assert.ok(albedo.size > 100_000, `${world} albedo map is unexpectedly small`);
+    assert.ok(height.size > 100_000, `${world} height map is unexpectedly small`);
+  }
 });
