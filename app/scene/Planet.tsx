@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { Moon } from "./Moon";
+import { RingSystem } from "./RingSystem";
 import type { MoonSurface, PlanetPalette } from "./sceneTypes";
 
 const atmosphereVertexShader = `
@@ -140,19 +141,12 @@ export function Planet({
       </mesh>
 
       {ring ? (
-        <mesh rotation={[Math.PI * 0.38, 0.25, 0.06]} receiveShadow>
-          <ringGeometry args={[radius * 1.32, radius * 2.05, 160]} />
-          <meshStandardMaterial
-            color={palette.accent}
-            emissive={palette.accent}
-            emissiveIntensity={0.18}
-            side={THREE.DoubleSide}
-            transparent
-            opacity={0.28}
-            roughness={0.9}
-            depthWrite={false}
-          />
-        </mesh>
+        <RingSystem
+          radius={radius}
+          seed={seed}
+          baseColor={palette.high}
+          dustColor={palette.accent}
+        />
       ) : null}
 
       {moon ? (

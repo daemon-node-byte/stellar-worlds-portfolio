@@ -124,3 +124,17 @@ test("ships paired 2K surface and terrain maps for every world and moon", async 
     assert.ok(height.size > 100_000, `${world} height map is unexpectedly small`);
   }
 });
+
+test("renders planetary rings with banded shader material and volumetric dust", async () => {
+  const [planetSource, ringSource] = await Promise.all([
+    readFile(new URL("../app/scene/Planet.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/scene/RingSystem.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(planetSource, /<RingSystem/);
+  assert.doesNotMatch(planetSource, /emissiveIntensity=\{0\.18\}/);
+  assert.match(ringSource, /broadBands/);
+  assert.match(ringSource, /planetaryShadow/);
+  assert.match(ringSource, /<points ref=\{dustRef\}>/);
+  assert.match(ringSource, /depthWrite=\{false\}/);
+});

@@ -9,7 +9,8 @@ About, Projects, Field Notes, and Contact.
 - Scroll-controlled camera travel with smooth cinematic interpolation
 - Five original 2K equirectangular surface maps with matching displacement and
   bump detail
-- Dynamic shadow-casting lights, atmospheres, rings, moons, and orbital debris
+- Dynamic shadow-casting lights, atmospheres, shader-banded rings with
+  volumetric dust, moons, and orbital debris
 - Bloom, chromatic aberration, grain, and vignette post-processing
 - Responsive editorial interface with keyboard navigation and reduced-motion
   support
