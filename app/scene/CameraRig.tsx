@@ -38,7 +38,7 @@ const cameraStops: readonly CameraStop[] = [
   },
   {
     id: "signal",
-    progress: 0.12,
+    progress: 0.1,
     trailing: 4.8,
     radial: 3.4,
     height: 1.1,
@@ -46,7 +46,7 @@ const cameraStops: readonly CameraStop[] = [
   },
   {
     id: "virelia",
-    progress: 0.3,
+    progress: 0.25,
     trailing: 5.4,
     radial: 3.8,
     height: 1.35,

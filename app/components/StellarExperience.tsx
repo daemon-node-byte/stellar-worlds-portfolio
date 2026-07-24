@@ -8,6 +8,13 @@ import {
 import type { FieldNoteSummary } from "../data/fieldNoteTypes";
 import { ObservatoryInterface } from "./ObservatoryInterface";
 import { SceneCanvas } from "./SceneCanvas";
+import {
+  calculateScrollProgress,
+  findClosestSection,
+  type SectionViewport,
+} from "./scrollSnapMath";
+
+const scrollSettleDelay = 180;
 
 function useReducedMotion() {
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -35,51 +42,81 @@ export function StellarExperience({ fieldNotes }: StellarExperienceProps) {
 
   useEffect(() => {
     let frameId = 0;
+    let settleTimer = 0;
 
-    const updateScrollState = () => {
+    const updateScrollProgress = () => {
       frameId = 0;
-      const scrollRange =
-        document.documentElement.scrollHeight - window.innerHeight;
-      progressRef.current =
-        scrollRange > 0
-          ? Math.min(Math.max(window.scrollY / scrollRange, 0), 1)
-          : 0;
+      progressRef.current = calculateScrollProgress(
+        window.scrollY,
+        document.documentElement.scrollHeight,
+        window.innerHeight,
+      );
+    };
 
-      const viewportCenter = window.innerHeight * 0.5;
-      let closestSection: PortfolioSectionId = portfolioSections[0].id;
-      let closestDistance = Number.POSITIVE_INFINITY;
+    const commitSettledSection = () => {
+      window.clearTimeout(settleTimer);
+      settleTimer = 0;
+      const sectionViewports = portfolioSections.flatMap<SectionViewport>(
+        (section) => {
+          const element = document.getElementById(section.id);
+          if (!element) return [];
 
-      portfolioSections.forEach((section) => {
-        const element = document.getElementById(section.id);
-        if (!element) return;
-        const bounds = element.getBoundingClientRect();
-        const distance = Math.abs(
-          bounds.top + bounds.height * 0.5 - viewportCenter,
-        );
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestSection = section.id;
-        }
-      });
+          const bounds = element.getBoundingClientRect();
+          return [{ id: section.id, top: bounds.top, height: bounds.height }];
+        },
+      );
+      const settledSection = findClosestSection(
+        sectionViewports,
+        window.innerHeight,
+      );
 
       setActiveSection((current) =>
-        current === closestSection ? current : closestSection,
+        current === settledSection ? current : settledSection,
+      );
+    };
+
+    const scheduleScrollUpdate = () => {
+      if (frameId === 0) {
+        frameId = window.requestAnimationFrame(updateScrollProgress);
+      }
+    };
+
+    const scheduleSettledSection = () => {
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(
+        commitSettledSection,
+        scrollSettleDelay,
       );
     };
 
     const handleScroll = () => {
-      if (frameId === 0) {
-        frameId = window.requestAnimationFrame(updateScrollState);
-      }
+      scheduleScrollUpdate();
+      scheduleSettledSection();
     };
 
-    updateScrollState();
+    const handleScrollEnd = () => {
+      updateScrollProgress();
+      commitSettledSection();
+    };
+
+    const handleResize = () => {
+      scheduleScrollUpdate();
+      scheduleSettledSection();
+    };
+
+    document.documentElement.classList.add("portfolio-scroll-snap");
+    updateScrollProgress();
+    commitSettledSection();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("scrollend", handleScrollEnd);
+    window.addEventListener("resize", handleResize);
 
     return () => {
+      document.documentElement.classList.remove("portfolio-scroll-snap");
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+      window.removeEventListener("scrollend", handleScrollEnd);
+      window.removeEventListener("resize", handleResize);
+      window.clearTimeout(settleTimer);
       if (frameId !== 0) window.cancelAnimationFrame(frameId);
     };
   }, []);

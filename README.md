@@ -6,7 +6,7 @@ About, Projects, Field Notes, and Contact.
 
 ## Experience
 
-- A full-system opening view followed by scroll-controlled, cinematic camera
+- A full-system opening view followed by snap-aligned, scene-to-scene camera
   approaches that chase each moving world
 - A central textured solar entity with animated plasma, a particle corona, and
   the scene's inverse-square, shadow-casting light
@@ -17,6 +17,7 @@ About, Projects, Field Notes, and Contact.
 - Bloom, chromatic aberration, grain, and vignette post-processing
 - Responsive editorial interface with keyboard navigation and reduced-motion
   support
+- Section content enters only after its destination has settled in the viewport
 - File-driven Markdown field notes with YAML front matter and shareable routes
 - Real project, source-code, contact, and social profile links
 - Host-aware Open Graph and X metadata with a bespoke social card

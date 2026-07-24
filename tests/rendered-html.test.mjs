@@ -57,9 +57,13 @@ test("server-renders Josh McLain's portfolio and site metadata", async () => {
 });
 
 test("renders every navigation destination as a semantic section", async () => {
-  const [html, css] = await Promise.all([
+  const [html, css, experienceSource] = await Promise.all([
     render().then((response) => response.text()),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(
+      new URL("../app/components/StellarExperience.tsx", import.meta.url),
+      "utf8",
+    ),
   ]);
 
   for (const sectionId of ["origin", "about", "projects", "notes", "contact"]) {
@@ -68,6 +72,26 @@ test("renders every navigation destination as a semantic section", async () => {
 
   assert.match(html, /Skip cinematic introduction/);
   assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /scroll-snap-type:\s*y mandatory/);
+  assert.match(css, /scroll-snap-stop:\s*always/);
+  assert.match(experienceSource, /"scrollend"/);
+  assert.match(experienceSource, /commitSettledSection/);
+});
+
+test("calculates bounded scroll progress and the closest settled section", async () => {
+  const { calculateScrollProgress, findClosestSection } = await import(
+    new URL("../app/components/scrollSnapMath.ts", import.meta.url).href
+  );
+  const sections = [
+    { id: "origin", top: -900, height: 900 },
+    { id: "about", top: 0, height: 900 },
+    { id: "projects", top: 900, height: 900 },
+  ];
+
+  assert.equal(calculateScrollProgress(900, 4_500, 900), 0.25);
+  assert.equal(calculateScrollProgress(-20, 4_500, 900), 0);
+  assert.equal(calculateScrollProgress(8_000, 4_500, 900), 1);
+  assert.equal(findClosestSection(sections, 900), "about");
 });
 
 test("builds the field-notes index and dynamic article routes from Markdown", async () => {

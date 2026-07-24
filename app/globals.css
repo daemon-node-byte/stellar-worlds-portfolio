@@ -21,6 +21,10 @@ html {
   background: var(--ink);
 }
 
+html.portfolio-scroll-snap {
+  scroll-snap-type: y mandatory;
+}
+
 body {
   margin: 0;
   background: var(--ink);
@@ -242,13 +246,11 @@ button {
 
 .portfolio-section {
   display: grid;
-  min-height: 120svh;
+  min-height: 100svh;
   align-items: center;
   padding: 8rem clamp(2rem, 7vw, 8rem) 5rem;
-}
-
-.portfolio-section--projects {
-  min-height: 140svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .section-content {
@@ -1299,13 +1301,9 @@ h2 {
   }
 
   .portfolio-section {
-    min-height: 125svh;
+    min-height: 100svh;
     align-items: end;
     padding: 7rem 1.25rem 9rem;
-  }
-
-  .portfolio-section--projects {
-    min-height: 180svh;
   }
 
   .section-content,
