@@ -125,6 +125,25 @@ test("ships paired 2K surface and terrain maps for every world and moon", async 
   }
 });
 
+test("ships detailed surface, emission, and height maps for the solar entity", async () => {
+  const solarMaps = [
+    "solar-surface-albedo.jpg",
+    "solar-surface-emission.jpg",
+    "solar-surface-height.jpg",
+  ];
+
+  for (const solarMap of solarMaps) {
+    const asset = await stat(
+      new URL(`../public/textures/solar/${solarMap}`, import.meta.url),
+    );
+
+    assert.ok(
+      asset.size > 100_000,
+      `${solarMap} is unexpectedly small`,
+    );
+  }
+});
+
 test("renders planetary rings with banded shader material and volumetric dust", async () => {
   const [planetSource, ringSource] = await Promise.all([
     readFile(new URL("../app/scene/Planet.tsx", import.meta.url), "utf8"),
@@ -137,4 +156,48 @@ test("renders planetary rings with banded shader material and volumetric dust", 
   assert.match(ringSource, /planetaryShadow/);
   assert.match(ringSource, /<points ref=\{dustRef\}>/);
   assert.match(ringSource, /depthWrite=\{false\}/);
+});
+
+test("builds a central-lighted orbital system with a moving chase camera", async () => {
+  const [sceneSource, solarSource, orbitalPlanetSource, cameraSource] =
+    await Promise.all([
+      readFile(new URL("../app/scene/SpaceScene.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/scene/SolarEntity.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/scene/OrbitalPlanet.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/scene/CameraRig.tsx", import.meta.url), "utf8"),
+    ]);
+
+  assert.match(sceneSource, /<SolarEntity \/>/);
+  assert.match(sceneSource, /<OrbitalPlanet/);
+  assert.match(sceneSource, /targets=\{orbitalTargets\}/);
+  assert.doesNotMatch(sceneSource, /<directionalLight/);
+  assert.match(solarSource, /<pointLight/);
+  assert.match(solarSource, /emissiveMap=\{emissionTexture\}/);
+  assert.match(orbitalPlanetSource, /calculateOrbitFrame/);
+  assert.match(cameraSource, /id: "overview"/);
+  assert.match(cameraSource, /body\.tangent/);
+});
+
+test("keeps each inclined orbital frame on its radius with an orthogonal tangent", async () => {
+  const { calculateOrbitFrame } = await import(
+    new URL("../app/scene/orbitalMath.ts", import.meta.url).href
+  );
+  const THREE = await import("three");
+  const position = new THREE.Vector3();
+  const tangent = new THREE.Vector3();
+
+  calculateOrbitFrame(
+    {
+      radius: 10,
+      angle: Math.PI / 2,
+      inclination: Math.PI / 6,
+      ascendingNode: Math.PI / 5,
+    },
+    position,
+    tangent,
+  );
+
+  assert.ok(Math.abs(position.length() - 10) < 1e-10);
+  assert.ok(Math.abs(tangent.length() - 1) < 1e-10);
+  assert.ok(Math.abs(position.dot(tangent)) < 1e-10);
 });

@@ -6,11 +6,14 @@ About, Projects, Field Notes, and Contact.
 
 ## Experience
 
-- Scroll-controlled camera travel with smooth cinematic interpolation
-- Five original 2K equirectangular surface maps with matching displacement and
-  bump detail
-- Dynamic shadow-casting lights, atmospheres, shader-banded rings with
-  volumetric dust, moons, and orbital debris
+- A full-system opening view followed by scroll-controlled, cinematic camera
+  approaches that chase each moving world
+- A central textured solar entity with animated plasma, a particle corona, and
+  the scene's inverse-square, shadow-casting light
+- Five planets in distinct inclined orbits, with original 2K equirectangular
+  surface maps and matching displacement and bump detail
+- Subtle atmospheres, shader-banded rings with volumetric dust, textured moons,
+  and orbital debris
 - Bloom, chromatic aberration, grain, and vignette post-processing
 - Responsive editorial interface with keyboard navigation and reduced-motion
   support
@@ -31,18 +34,18 @@ its content in `ObservatoryInterface.tsx`.
 
 ### Scene layer
 
-`app/scene/` owns camera choreography, image-based planet materials, lighting,
-particles, and post-processing. Scene components depend on React Three Fiber,
-Three.js, and React Postprocessing. They do not depend on page markup or
-portfolio copy.
+`app/scene/` owns orbital motion, camera choreography, image-based planet and
+solar materials, lighting, particles, and post-processing. Scene components
+depend on React Three Fiber, Three.js, and React Postprocessing. They do not
+depend on page markup or portfolio copy.
 
-Example: tune a planet's palette or orbital details in `SpaceScene.tsx` without
-changing the navigation.
+Example: tune a planet's palette or orbital details in
+`solarSystemConfig.ts` without changing the navigation.
 
-The generated albedo and terrain-height assets live in
-`public/textures/planets/`. Each world and textured moon uses one
-`*-albedo.jpg` map for visible surface color and one `*-height.jpg` map for
-bump and vertex displacement.
+The generated planet and moon assets live in `public/textures/planets/`. Each
+body uses one `*-albedo.jpg` map for visible surface color and one
+`*-height.jpg` map for bump and vertex displacement. The stellar albedo,
+emission, and height maps live in `public/textures/solar/`.
 
 ### Content layer
 
@@ -81,8 +84,10 @@ The project requires Node.js 22.13 or newer.
   `app/content/field-notes/`; the filename is the URL slug.
 - Replace the introductory, about, and contact copy in
   `app/components/ObservatoryInterface.tsx`.
-- Tune world positions, palettes, lights, and effect intensity in
-  `app/scene/SpaceScene.tsx`.
+- Tune orbit radii, speeds, inclinations, and world palettes in
+  `app/scene/solarSystemConfig.ts`.
+- Tune the solar entity, corona, and central light in
+  `app/scene/SolarEntity.tsx`.
 - Replace a world by preserving its paired albedo and height-map filenames in
   `public/textures/planets/`.
 - Replace `public/og.png` after changing the site's title or visual identity.

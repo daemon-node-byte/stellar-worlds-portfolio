@@ -18,7 +18,7 @@ export function SceneCanvas({
   return (
     <div className="scene-canvas" aria-hidden="true">
       <Canvas
-        camera={{ position: [0.2, 0.1, 11], fov: 45, near: 0.1, far: 180 }}
+        camera={{ position: [0, 54, 72], fov: 52, near: 0.1, far: 220 }}
         dpr={[1, 1.5]}
         shadows={{ type: THREE.PCFSoftShadowMap }}
         gl={{
@@ -29,7 +29,7 @@ export function SceneCanvas({
         onCreated={({ gl }) => {
           gl.outputColorSpace = THREE.SRGBColorSpace;
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 0.96;
+          gl.toneMappingExposure = 0.9;
         }}
         fallback={
           <div className="scene-fallback">
