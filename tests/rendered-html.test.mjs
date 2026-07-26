@@ -213,7 +213,7 @@ test("builds a central-lighted orbital system with a moving chase camera", async
       readFile(new URL("../app/scene/CameraRig.tsx", import.meta.url), "utf8"),
     ]);
 
-  assert.match(sceneSource, /<SolarEntity \/>/);
+  assert.match(sceneSource, /<SolarEntity/);
   assert.match(sceneSource, /<OrbitalPlanet/);
   assert.match(sceneSource, /targets=\{orbitalTargets\}/);
   assert.doesNotMatch(sceneSource, /<directionalLight/);
@@ -222,6 +222,23 @@ test("builds a central-lighted orbital system with a moving chase camera", async
   assert.match(orbitalPlanetSource, /calculateOrbitFrame/);
   assert.match(cameraSource, /id: "overview"/);
   assert.match(cameraSource, /body\.tangent/);
+});
+
+test("layers procedural lens glare and god rays around the brighter star", async () => {
+  const [sceneSource, solarSource] = await Promise.all([
+    readFile(new URL("../app/scene/SpaceScene.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/scene/SolarEntity.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(sceneSource, /<GodRays/);
+  assert.match(sceneSource, /sun=\{godRaysSource\}/);
+  assert.match(sceneSource, /<LensFlare/);
+  assert.match(sceneSource, /lensPosition=\{solarPosition\}/);
+  assert.match(sceneSource, /animated=\{!reducedMotion\}/);
+  assert.match(solarSource, /intensity=\{760\}/);
+  assert.match(solarSource, /godRaysSourceRef/);
+  assert.match(solarSource, /depthWrite=\{false\}/);
+  assert.match(solarSource, /lensflare: "no-occlusion"/);
 });
 
 test("keeps each inclined orbital frame on its radius with an orthogonal tangent", async () => {

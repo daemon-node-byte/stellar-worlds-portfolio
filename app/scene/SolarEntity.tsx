@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  type RefObject,
+} from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { solarRadius } from "./solarSystemConfig";
+
+type SolarEntityProps = {
+  godRaysSourceRef: RefObject<THREE.Mesh>;
+};
 
 const coronaVertexShader = `
   varying vec3 vNormal;
@@ -40,7 +49,9 @@ function seededRandom(index: number) {
   return value - Math.floor(value);
 }
 
-export function SolarEntity() {
+export function SolarEntity({
+  godRaysSourceRef,
+}: SolarEntityProps) {
   const coreRef = useRef<THREE.Mesh>(null);
   const plasmaRef = useRef<THREE.Mesh>(null);
   const coronaDustRef = useRef<THREE.Points>(null);
@@ -125,7 +136,7 @@ export function SolarEntity() {
       <pointLight
         castShadow
         color="#ffd18a"
-        intensity={620}
+        intensity={760}
         distance={0}
         decay={2}
         shadow-mapSize={[1024, 1024]}
@@ -135,13 +146,13 @@ export function SolarEntity() {
         shadow-radius={2}
       />
 
-      <mesh ref={coreRef}>
+      <mesh ref={coreRef} userData={{ lensflare: "no-occlusion" }}>
         <sphereGeometry args={[solarRadius, 128, 128]} />
         <meshStandardMaterial
           map={surfaceTexture}
           emissive="#ffad42"
           emissiveMap={emissionTexture}
-          emissiveIntensity={1.75}
+          emissiveIntensity={2.1}
           bumpMap={heightTexture}
           bumpScale={solarRadius * 0.035}
           displacementMap={heightTexture}
@@ -152,19 +163,40 @@ export function SolarEntity() {
         />
       </mesh>
 
-      <mesh ref={plasmaRef} scale={1.018}>
+      <mesh
+        ref={godRaysSourceRef}
+        scale={0.975}
+        userData={{ lensflare: "no-occlusion" }}
+      >
+        <sphereGeometry args={[solarRadius, 64, 64]} />
+        <meshBasicMaterial
+          color="#fff0b5"
+          transparent
+          opacity={1}
+          depthWrite={false}
+        />
+      </mesh>
+
+      <mesh
+        ref={plasmaRef}
+        scale={1.018}
+        userData={{ lensflare: "no-occlusion" }}
+      >
         <sphereGeometry args={[solarRadius, 96, 96]} />
         <meshBasicMaterial
           map={emissionTexture}
           color="#ffd46b"
           transparent
-          opacity={0.12}
+          opacity={0.15}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
       </mesh>
 
-      <mesh scale={1.18}>
+      <mesh
+        scale={1.18}
+        userData={{ lensflare: "no-occlusion" }}
+      >
         <sphereGeometry args={[solarRadius, 96, 96]} />
         <shaderMaterial
           ref={coronaMaterialRef}

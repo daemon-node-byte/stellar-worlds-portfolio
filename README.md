@@ -11,11 +11,12 @@ About, Projects, Field Notes, and Contact.
 - Wheel and trackpad gestures use the same paced transition as header navigation
 - A central textured solar entity with animated plasma, a particle corona, and
   the scene's inverse-square, shadow-casting light
+- Occlusion-aware god rays and procedural anamorphic lens glare from the star
 - Five planets in distinct inclined orbits, with original 2K equirectangular
   surface maps and matching displacement and bump detail
 - Subtle atmospheres, shader-banded rings with volumetric dust, textured moons,
   and orbital debris
-- Bloom, chromatic aberration, grain, and vignette post-processing
+- Bloom, chromatic aberration, grain, vignette, and solar glare post-processing
 - Responsive editorial interface with keyboard navigation and reduced-motion
   support
 - Section content enters only after its destination has settled in the viewport
