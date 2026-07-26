@@ -8,6 +8,7 @@ About, Projects, Field Notes, and Contact.
 
 - A full-system opening view followed by snap-aligned, scene-to-scene camera
   approaches that chase each moving world
+- Slow orbital camera arcs add parallax and depth to every planetary close-up
 - Wheel and trackpad gestures use the same paced transition as header navigation
 - A central textured solar entity with animated plasma, a particle corona, and
   the scene's inverse-square, shadow-casting light

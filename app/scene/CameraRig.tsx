@@ -8,6 +8,10 @@ import type {
   PlanetId,
   ScrollProgressRef,
 } from "./sceneTypes";
+import {
+  calculateCameraOrbitAngle,
+  type CameraOrbitMotion,
+} from "./cameraOrbitMath";
 
 type OverviewCameraStop = {
   id: "overview";
@@ -17,7 +21,7 @@ type OverviewCameraStop = {
   fov: number;
 };
 
-type PlanetCameraStop = {
+type PlanetCameraStop = CameraOrbitMotion & {
   id: PlanetId;
   progress: number;
   trailing: number;
@@ -43,6 +47,9 @@ const cameraStops: readonly CameraStop[] = [
     radial: 3.4,
     height: 1.1,
     fov: 44,
+    orbitArc: 0.18,
+    orbitSpeed: 0.12,
+    orbitPhase: 0,
   },
   {
     id: "virelia",
@@ -51,6 +58,9 @@ const cameraStops: readonly CameraStop[] = [
     radial: 3.8,
     height: 1.35,
     fov: 44,
+    orbitArc: 0.22,
+    orbitSpeed: 0.1,
+    orbitPhase: 1.1,
   },
   {
     id: "khepri",
@@ -59,6 +69,9 @@ const cameraStops: readonly CameraStop[] = [
     radial: 3.4,
     height: 1.2,
     fov: 43,
+    orbitArc: 0.16,
+    orbitSpeed: 0.09,
+    orbitPhase: 2.3,
   },
   {
     id: "calyx",
@@ -67,6 +80,9 @@ const cameraStops: readonly CameraStop[] = [
     radial: 4.1,
     height: 1.5,
     fov: 43,
+    orbitArc: 0.2,
+    orbitSpeed: 0.11,
+    orbitPhase: 0.6,
   },
   {
     id: "nox",
@@ -75,6 +91,9 @@ const cameraStops: readonly CameraStop[] = [
     radial: 3.5,
     height: 1.15,
     fov: 43,
+    orbitArc: 0.18,
+    orbitSpeed: 0.08,
+    orbitPhase: 1.8,
   },
 ] as const;
 
@@ -84,6 +103,9 @@ function resolveCameraStop(
   position: THREE.Vector3,
   lookTarget: THREE.Vector3,
   radialDirection: THREE.Vector3,
+  cameraOffset: THREE.Vector3,
+  elapsedTime: number,
+  reducedMotion: boolean,
 ) {
   if (stop.id === "overview") {
     position.set(...stop.position);
@@ -99,11 +121,16 @@ function resolveCameraStop(
     radialDirection.normalize();
   }
 
-  position
-    .copy(body.position)
-    .addScaledVector(body.tangent, -body.radius * stop.trailing)
+  cameraOffset
+    .copy(body.tangent)
+    .multiplyScalar(-body.radius * stop.trailing)
     .addScaledVector(radialDirection, body.radius * stop.radial);
-  position.y += body.radius * stop.height;
+  cameraOffset.y += body.radius * stop.height;
+  cameraOffset.applyAxisAngle(
+    THREE.Object3D.DEFAULT_UP,
+    calculateCameraOrbitAngle(elapsedTime, stop, reducedMotion),
+  );
+  position.copy(body.position).add(cameraOffset);
 
   lookTarget
     .copy(body.position)
@@ -127,9 +154,11 @@ export function CameraRig({
   const startPosition = useMemo(() => new THREE.Vector3(), []);
   const startTarget = useMemo(() => new THREE.Vector3(), []);
   const startRadial = useMemo(() => new THREE.Vector3(), []);
+  const startOffset = useMemo(() => new THREE.Vector3(), []);
   const endPosition = useMemo(() => new THREE.Vector3(), []);
   const endTarget = useMemo(() => new THREE.Vector3(), []);
   const endRadial = useMemo(() => new THREE.Vector3(), []);
+  const endOffset = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((state, delta) => {
     const progress = THREE.MathUtils.clamp(progressRef.current, 0, 1);
@@ -155,8 +184,20 @@ export function CameraRig({
       startPosition,
       startTarget,
       startRadial,
+      startOffset,
+      state.clock.elapsedTime,
+      reducedMotion,
     );
-    resolveCameraStop(end, targets, endPosition, endTarget, endRadial);
+    resolveCameraStop(
+      end,
+      targets,
+      endPosition,
+      endTarget,
+      endRadial,
+      endOffset,
+      state.clock.elapsedTime,
+      reducedMotion,
+    );
     desiredPosition.copy(startPosition).lerp(endPosition, mix);
     desiredTarget.copy(startTarget).lerp(endTarget, mix);
 

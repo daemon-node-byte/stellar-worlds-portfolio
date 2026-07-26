@@ -222,6 +222,8 @@ test("builds a central-lighted orbital system with a moving chase camera", async
   assert.match(orbitalPlanetSource, /calculateOrbitFrame/);
   assert.match(cameraSource, /id: "overview"/);
   assert.match(cameraSource, /body\.tangent/);
+  assert.match(cameraSource, /applyAxisAngle/);
+  assert.match(cameraSource, /calculateCameraOrbitAngle/);
 });
 
 test("mounts safe solar glare and god rays around the brighter star", async () => {
@@ -263,4 +265,19 @@ test("keeps each inclined orbital frame on its radius with an orthogonal tangent
   assert.ok(Math.abs(position.length() - 10) < 1e-10);
   assert.ok(Math.abs(tangent.length() - 1) < 1e-10);
   assert.ok(Math.abs(position.dot(tangent)) < 1e-10);
+});
+
+test("keeps close-up camera orbit motion subtle and disables it for reduced motion", async () => {
+  const { calculateCameraOrbitAngle } = await import(
+    new URL("../app/scene/cameraOrbitMath.ts", import.meta.url).href
+  );
+  const motion = {
+    orbitArc: 0.2,
+    orbitSpeed: 0.1,
+    orbitPhase: 0.4,
+  };
+
+  const angle = calculateCameraOrbitAngle(12, motion, false);
+  assert.ok(Math.abs(angle) <= motion.orbitArc);
+  assert.equal(calculateCameraOrbitAngle(12, motion, true), 0);
 });
