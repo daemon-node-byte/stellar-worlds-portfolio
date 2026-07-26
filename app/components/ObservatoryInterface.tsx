@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import type { FieldNoteSummary } from "../data/fieldNoteTypes";
+import type { ProjectCaseStudySummary } from "../data/projectCaseStudyTypes";
 import {
   portfolioSections,
-  selectedProjects,
   type PortfolioSectionId,
 } from "../data/portfolioContent";
 import { ProjectCard } from "./ProjectCard";
@@ -14,6 +14,7 @@ type ObservatoryInterfaceProps = {
   activeSection: PortfolioSectionId;
   fieldNotes: readonly FieldNoteSummary[];
   onNavigate: (sectionId: PortfolioSectionId) => void;
+  projects: readonly ProjectCaseStudySummary[];
 };
 
 function OriginSection({
@@ -111,7 +112,9 @@ function AboutSection() {
   );
 }
 
-function ProjectsSection() {
+function ProjectsSection({
+  projects,
+}: Pick<ObservatoryInterfaceProps, "projects">) {
   return (
     <div className="section-content section-content--wide">
       <div className="section-heading">
@@ -122,10 +125,13 @@ function ProjectsSection() {
         <h2>Selected builds.</h2>
       </div>
       <div className="project-grid">
-        {selectedProjects.map((project) => (
-          <ProjectCard project={project} key={project.name} />
+        {projects.map((project) => (
+          <ProjectCard project={project} key={project.slug} />
         ))}
       </div>
+      <Link className="project-archive-link" href="/projects">
+        Open the orbital dossier archive <span aria-hidden="true">↗</span>
+      </Link>
     </div>
   );
 }
@@ -194,6 +200,7 @@ export function ObservatoryInterface({
   activeSection,
   fieldNotes,
   onNavigate,
+  projects,
 }: ObservatoryInterfaceProps) {
   return (
     <>
@@ -265,7 +272,9 @@ export function ObservatoryInterface({
               <OriginSection onNavigate={onNavigate} />
             ) : null}
             {section.id === "about" ? <AboutSection /> : null}
-            {section.id === "projects" ? <ProjectsSection /> : null}
+            {section.id === "projects" ? (
+              <ProjectsSection projects={projects} />
+            ) : null}
             {section.id === "notes" ? (
               <NotesSection fieldNotes={fieldNotes} />
             ) : null}

@@ -46,6 +46,8 @@ test("server-renders Josh McLain's portfolio and site metadata", async () => {
   assert.match(html, /linkedin\.com\/in\/joshmclain45/);
   assert.match(html, /crispy-happiness-gilt\.vercel\.app/);
   assert.match(html, /react-icons|Source code/i);
+  assert.match(html, /\/projects\/astarot/);
+  assert.match(html, /Orbital dossier/i);
   assert.match(html, /View résumé/);
   assert.match(html, /\/resume\/Josh-McLain-Resume\.pdf/);
   assert.match(html, /\/resume\/Josh-McLain-Resume\.docx/);
@@ -189,6 +191,48 @@ test("builds the field-notes index and dynamic article routes from Markdown", as
 
   assert.match(indexHtml, /Notes from/);
   assert.match(indexHtml, /Designing interfaces that feel discovered/);
+});
+
+test("builds the project archive and dynamic case-study routes from Markdown", async () => {
+  const slugs = ["astarot", "ableton-mcp", "ts-env-validator"];
+  const indexResponse = await render("/projects");
+  assert.equal(indexResponse.status, 200);
+  const indexHtml = await indexResponse.text();
+
+  assert.match(indexHtml, /Orbital/);
+  assert.match(indexHtml, /dossiers/);
+
+  for (const slug of slugs) {
+    assert.match(indexHtml, new RegExp(`/projects/${slug}`));
+    const caseStudyResponse = await render(`/projects/${slug}`);
+    assert.equal(caseStudyResponse.status, 200);
+    const caseStudyHtml = await caseStudyResponse.text();
+    assert.match(caseStudyHtml, /All project dossiers/);
+    assert.match(caseStudyHtml, /Mission record/);
+    assert.match(caseStudyHtml, /Next orbital dossier/);
+  }
+});
+
+test("renders themed orbital project visuals with reduced-motion coverage", async () => {
+  const [visualSource, css] = await Promise.all([
+    readFile(
+      new URL(
+        "../app/components/ProjectOrbitalVisual.tsx",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(visualSource, /project-orbital-visual--\$\{theme\}/);
+  assert.match(visualSource, /project-orbital-visual__body/);
+  assert.match(visualSource, /project-orbital-visual__moon/);
+  assert.match(css, /@keyframes project-orbit-rotate/);
+  assert.match(css, /\.project-dossier--violet/);
+  assert.match(css, /\.project-dossier--cyan/);
+  assert.match(css, /\.project-dossier--amber/);
+  assert.match(css, /prefers-reduced-motion:\s*reduce/);
 });
 
 test("ships paired 2K surface and terrain maps for every world and moon", async () => {

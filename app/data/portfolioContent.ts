@@ -33,51 +33,6 @@ export const portfolioSections = [
 
 export type PortfolioSectionId = (typeof portfolioSections)[number]["id"];
 
-export type PortfolioProject = {
-  index: string;
-  year: string;
-  name: string;
-  type: string;
-  description: string;
-  tags: readonly string[];
-  liveUrl?: string;
-  sourceUrl?: string;
-};
-
-export const selectedProjects: readonly PortfolioProject[] = [
-  {
-    index: "01",
-    year: "2026",
-    name: "Astarot",
-    type: "Full-stack web application",
-    description:
-      "A tarot and astrology experience that turns symbolic systems into an approachable interactive product.",
-    tags: ["Next.js", "Python", "Product"],
-    liveUrl: "https://crispy-happiness-gilt.vercel.app",
-    sourceUrl: "https://github.com/daemon-node-byte/crispy-happiness",
-  },
-  {
-    index: "02",
-    year: "2026",
-    name: "Ableton MCP",
-    type: "Creative developer tooling",
-    description:
-      "A local bridge that lets intelligent tools communicate with Ableton Live for exploratory music workflows.",
-    tags: ["Python", "MCP", "Automation"],
-    sourceUrl: "https://github.com/daemon-node-byte/ableton_mcp",
-  },
-  {
-    index: "03",
-    year: "2026",
-    name: "TS Env Validator",
-    type: "Open-source utility",
-    description:
-      "A small, type-safe environment validation layer for Node.js and Next.js applications.",
-    tags: ["TypeScript", "Node.js", "DX"],
-    sourceUrl: "https://github.com/daemon-node-byte/ts-env-validator",
-  },
-] as const;
-
 export type SocialProfileId = "github" | "linkedin" | "facebook" | "x";
 
 export const socialProfiles: readonly {

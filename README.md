@@ -23,7 +23,8 @@ About, Projects, Field Notes, and Contact.
   support, including dedicated 600px and 380px layouts for narrow phones
 - Section content enters only after its destination has settled in the viewport
 - File-driven Markdown field notes with YAML front matter and shareable routes
-- Real project, source-code, contact, and social profile links
+- File-driven orbital project dossiers with shareable case-study routes
+- Real live-project, source-code, contact, and social profile links
 - Browser-viewable PDF and original Word résumé actions in the About view
 - Host-aware Open Graph and X metadata with a bespoke social card
 
@@ -55,15 +56,18 @@ emission, and height maps live in `public/textures/solar/`.
 
 ### Content layer
 
-`app/data/portfolioContent.ts` is the authoritative source for navigation,
-projects, and social profiles. Field-note documents live in
-`app/content/field-notes/` as Markdown with YAML front matter.
-`app/lib/fieldNotes.ts` discovers those documents at build time, validates their
-metadata, and supplies both the home-page list and the `/field-notes/[slug]`
-routes.
+`app/data/portfolioContent.ts` is the authoritative source for navigation and
+social profiles. Field-note documents live in `app/content/field-notes/`, while
+project case studies live in `app/content/projects/`; both use Markdown with
+YAML front matter. Their loaders discover documents at build time, validate the
+metadata, and supply the home-page cards plus the `/field-notes/[slug]` and
+`/projects/[slug]` routes.
 
 Example: add `a-new-note.md` to the field-notes directory and it becomes a list
 item whose URL is `/field-notes/a-new-note`.
+
+Example: add `a-new-project.md` to the projects directory and it becomes an
+orbital dossier whose URL is `/projects/a-new-project`.
 
 ### Hosting layer
 
@@ -84,8 +88,9 @@ The project requires Node.js 22.13 or newer.
 
 ## Customizing the portfolio
 
-- Replace navigation, project, and social content in
-  `app/data/portfolioContent.ts`.
+- Replace navigation and social content in `app/data/portfolioContent.ts`.
+- Add, remove, or edit project case studies in `app/content/projects/`; the
+  filename is the project URL slug.
 - Add, remove, or edit field-note Markdown documents in
   `app/content/field-notes/`; the filename is the URL slug.
 - Replace the introductory, about, and contact copy in
