@@ -4,14 +4,13 @@ import {
   useEffect,
   useMemo,
   useRef,
-  type RefObject,
 } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { solarRadius } from "./solarSystemConfig";
 
 type SolarEntityProps = {
-  godRaysSourceRef: RefObject<THREE.Mesh>;
+  onGodRaysSourceChange: (source: THREE.Mesh | null) => void;
 };
 
 const coronaVertexShader = `
@@ -49,8 +48,43 @@ function seededRandom(index: number) {
   return value - Math.floor(value);
 }
 
+function createGlareTexture() {
+  const size = 256;
+  const data = new Uint8Array(size * size * 4);
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const normalizedX = (x / (size - 1)) * 2 - 1;
+      const normalizedY = (y / (size - 1)) * 2 - 1;
+      const distance = Math.sqrt(
+        normalizedX * normalizedX + normalizedY * normalizedY,
+      );
+      const edge = Math.max(0, 1 - distance);
+      const core = Math.pow(edge, 5);
+      const halo = Math.pow(edge, 1.8) * 0.42;
+      const alpha = Math.min(1, core + halo);
+      const offset = (y * size + x) * 4;
+
+      data[offset] = 255;
+      data[offset + 1] = 239;
+      data[offset + 2] = 174;
+      data[offset + 3] = Math.round(alpha * 255);
+    }
+  }
+
+  const texture = new THREE.DataTexture(
+    data,
+    size,
+    size,
+    THREE.RGBAFormat,
+  );
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  return texture;
+}
+
 export function SolarEntity({
-  godRaysSourceRef,
+  onGodRaysSourceChange,
 }: SolarEntityProps) {
   const coreRef = useRef<THREE.Mesh>(null);
   const plasmaRef = useRef<THREE.Mesh>(null);
@@ -72,6 +106,7 @@ export function SolarEntity({
     }),
     [],
   );
+  const glareTexture = useMemo(createGlareTexture, []);
   const coronaParticles = useMemo(() => {
     const particleCount = 720;
     const data = new Float32Array(particleCount * 3);
@@ -112,6 +147,8 @@ export function SolarEntity({
     heightTexture.needsUpdate = true;
   }, [emissionTexture, gl, heightTexture, surfaceTexture]);
 
+  useEffect(() => () => glareTexture.dispose(), [glareTexture]);
+
   useFrame((state, delta) => {
     if (coreRef.current) {
       coreRef.current.rotation.y += delta * 0.018;
@@ -146,7 +183,7 @@ export function SolarEntity({
         shadow-radius={2}
       />
 
-      <mesh ref={coreRef} userData={{ lensflare: "no-occlusion" }}>
+      <mesh ref={coreRef}>
         <sphereGeometry args={[solarRadius, 128, 128]} />
         <meshStandardMaterial
           map={surfaceTexture}
@@ -164,9 +201,8 @@ export function SolarEntity({
       </mesh>
 
       <mesh
-        ref={godRaysSourceRef}
+        ref={onGodRaysSourceChange}
         scale={0.975}
-        userData={{ lensflare: "no-occlusion" }}
       >
         <sphereGeometry args={[solarRadius, 64, 64]} />
         <meshBasicMaterial
@@ -180,7 +216,6 @@ export function SolarEntity({
       <mesh
         ref={plasmaRef}
         scale={1.018}
-        userData={{ lensflare: "no-occlusion" }}
       >
         <sphereGeometry args={[solarRadius, 96, 96]} />
         <meshBasicMaterial
@@ -193,10 +228,7 @@ export function SolarEntity({
         />
       </mesh>
 
-      <mesh
-        scale={1.18}
-        userData={{ lensflare: "no-occlusion" }}
-      >
+      <mesh scale={1.18}>
         <sphereGeometry args={[solarRadius, 96, 96]} />
         <shaderMaterial
           ref={coronaMaterialRef}
@@ -209,6 +241,36 @@ export function SolarEntity({
           depthWrite={false}
         />
       </mesh>
+
+      <sprite
+        scale={[solarRadius * 5.4, solarRadius * 5.4, 1]}
+        renderOrder={4}
+      >
+        <spriteMaterial
+          map={glareTexture}
+          color="#ffd66b"
+          transparent
+          opacity={0.24}
+          blending={THREE.AdditiveBlending}
+          depthTest
+          depthWrite={false}
+        />
+      </sprite>
+
+      <sprite
+        scale={[solarRadius * 8.4, solarRadius * 0.72, 1]}
+        renderOrder={5}
+      >
+        <spriteMaterial
+          map={glareTexture}
+          color="#ffb35c"
+          transparent
+          opacity={0.16}
+          blending={THREE.AdditiveBlending}
+          depthTest
+          depthWrite={false}
+        />
+      </sprite>
 
       <points ref={coronaDustRef}>
         <bufferGeometry>

@@ -224,7 +224,7 @@ test("builds a central-lighted orbital system with a moving chase camera", async
   assert.match(cameraSource, /body\.tangent/);
 });
 
-test("layers procedural lens glare and god rays around the brighter star", async () => {
+test("mounts safe solar glare and god rays around the brighter star", async () => {
   const [sceneSource, solarSource] = await Promise.all([
     readFile(new URL("../app/scene/SpaceScene.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/scene/SolarEntity.tsx", import.meta.url), "utf8"),
@@ -232,13 +232,13 @@ test("layers procedural lens glare and god rays around the brighter star", async
 
   assert.match(sceneSource, /<GodRays/);
   assert.match(sceneSource, /sun=\{godRaysSource\}/);
-  assert.match(sceneSource, /<LensFlare/);
-  assert.match(sceneSource, /lensPosition=\{solarPosition\}/);
-  assert.match(sceneSource, /animated=\{!reducedMotion\}/);
+  assert.match(sceneSource, /if \(!godRaysSource\) return null/);
+  assert.doesNotMatch(sceneSource, /<LensFlare/);
   assert.match(solarSource, /intensity=\{760\}/);
-  assert.match(solarSource, /godRaysSourceRef/);
+  assert.match(solarSource, /onGodRaysSourceChange/);
+  assert.match(solarSource, /new THREE\.DataTexture/);
+  assert.match(solarSource, /<sprite/);
   assert.match(solarSource, /depthWrite=\{false\}/);
-  assert.match(solarSource, /lensflare: "no-occlusion"/);
 });
 
 test("keeps each inclined orbital frame on its radius with an orthogonal tangent", async () => {
