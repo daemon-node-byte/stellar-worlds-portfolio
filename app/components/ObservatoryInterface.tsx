@@ -67,6 +67,32 @@ function AboutSection() {
           judgment, dependable engineering, and a visual point of view.
         </p>
       </div>
+      <div className="resume-actions" aria-label="Résumé actions">
+        <a
+          className="resume-action resume-action--primary"
+          href="/resume/Josh-McLain-Resume.pdf"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="View Josh McLain's résumé as a PDF in a new tab"
+        >
+          <span>
+            <span className="resume-action__meta">Résumé / PDF</span>
+            View résumé
+          </span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a
+          className="resume-action"
+          href="/resume/Josh-McLain-Resume.docx"
+          download
+        >
+          <span>
+            <span className="resume-action__meta">Original / DOCX</span>
+            Download copy
+          </span>
+          <span aria-hidden="true">↓</span>
+        </a>
+      </div>
       <dl className="capability-list">
         <div>
           <dt>01</dt>

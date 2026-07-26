@@ -24,6 +24,7 @@ About, Projects, Field Notes, and Contact.
 - Section content enters only after its destination has settled in the viewport
 - File-driven Markdown field notes with YAML front matter and shareable routes
 - Real project, source-code, contact, and social profile links
+- Browser-viewable PDF and original Word résumé actions in the About view
 - Host-aware Open Graph and X metadata with a bespoke social card
 
 ## Architecture
@@ -89,6 +90,7 @@ The project requires Node.js 22.13 or newer.
   `app/content/field-notes/`; the filename is the URL slug.
 - Replace the introductory, about, and contact copy in
   `app/components/ObservatoryInterface.tsx`.
+- Replace the matching PDF and DOCX résumé files in `public/resume/`.
 - Tune orbit radii, speeds, inclinations, and world palettes in
   `app/scene/solarSystemConfig.ts`.
 - Tune the solar entity, corona, and central light in

@@ -410,6 +410,73 @@ h2 {
   margin-bottom: 0;
 }
 
+.resume-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  max-width: 38rem;
+  margin-top: 1.7rem;
+  border: 1px solid var(--line);
+  background: var(--line);
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 18%);
+}
+
+.resume-action {
+  display: flex;
+  min-height: 4.4rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  background: rgb(3 8 7 / 82%);
+  color: var(--bone);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 200ms ease,
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.resume-action:hover,
+.resume-action:focus-visible {
+  z-index: 1;
+  background: rgb(13 25 19 / 94%);
+  color: var(--acid);
+  transform: translateY(-0.18rem);
+}
+
+.resume-action--primary {
+  background: rgb(216 255 69 / 12%);
+}
+
+.resume-action__meta {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--fog);
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+}
+
+.resume-action > span:last-child {
+  color: var(--acid);
+  font-size: 0.95rem;
+  transition: transform 200ms ease;
+}
+
+.resume-action:hover > span:last-child,
+.resume-action:focus-visible > span:last-child {
+  transform: translate(0.16rem, -0.16rem);
+}
+
+.resume-action:last-child:hover > span:last-child,
+.resume-action:last-child:focus-visible > span:last-child {
+  transform: translateY(0.2rem);
+}
+
 .capability-list {
   display: grid;
   margin: 2.6rem 0 0;
@@ -1392,6 +1459,10 @@ h2 {
 
   .contact-link {
     font-size: 0.62rem;
+  }
+
+  .resume-actions {
+    grid-template-columns: 1fr;
   }
 
   .social-links a {

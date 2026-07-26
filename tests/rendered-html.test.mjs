@@ -46,6 +46,9 @@ test("server-renders Josh McLain's portfolio and site metadata", async () => {
   assert.match(html, /linkedin\.com\/in\/joshmclain45/);
   assert.match(html, /crispy-happiness-gilt\.vercel\.app/);
   assert.match(html, /react-icons|Source code/i);
+  assert.match(html, /View résumé/);
+  assert.match(html, /\/resume\/Josh-McLain-Resume\.pdf/);
+  assert.match(html, /\/resume\/Josh-McLain-Resume\.docx/);
   assert.match(
     html,
     /<meta[^>]+property="og:image"[^>]+content="https:\/\/portfolio\.test\/og\.png"/i,
@@ -114,6 +117,22 @@ test("calculates bounded scroll progress and the closest settled section", async
     canScrollWithinSection({ top: -300, height: 1_200 }, 900, -1),
     true,
   );
+});
+
+test("ships browser-viewable and downloadable résumé files", async () => {
+  const [pdf, docx] = await Promise.all([
+    readFile(
+      new URL("../public/resume/Josh-McLain-Resume.pdf", import.meta.url),
+    ),
+    readFile(
+      new URL("../public/resume/Josh-McLain-Resume.docx", import.meta.url),
+    ),
+  ]);
+
+  assert.equal(pdf.subarray(0, 4).toString(), "%PDF");
+  assert.equal(docx.subarray(0, 2).toString(), "PK");
+  assert.ok(pdf.length > 50_000, "résumé PDF is unexpectedly small");
+  assert.ok(docx.length > 20_000, "résumé DOCX is unexpectedly small");
 });
 
 test("builds the field-notes index and dynamic article routes from Markdown", async () => {
