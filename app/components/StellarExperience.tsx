@@ -9,12 +9,16 @@ import type { FieldNoteSummary } from "../data/fieldNoteTypes";
 import { ObservatoryInterface } from "./ObservatoryInterface";
 import { SceneCanvas } from "./SceneCanvas";
 import {
+  canScrollWithinSection,
   calculateScrollProgress,
+  findAdjacentSection,
   findClosestSection,
   type SectionViewport,
 } from "./scrollSnapMath";
 
 const scrollSettleDelay = 180;
+const wheelDeltaThreshold = 18;
+const smoothScrollFallback = 1_200;
 
 function useReducedMotion() {
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -36,9 +40,39 @@ type StellarExperienceProps = {
 
 export function StellarExperience({ fieldNotes }: StellarExperienceProps) {
   const progressRef = useRef(0);
+  const activeSectionRef = useRef<PortfolioSectionId>("origin");
+  const transitioningRef = useRef(false);
+  const transitionTimerRef = useRef(0);
+  const wheelDeltaRef = useRef(0);
   const reducedMotion = useReducedMotion();
   const [activeSection, setActiveSection] =
     useState<PortfolioSectionId>("origin");
+
+  const finishTransition = useCallback(() => {
+    window.clearTimeout(transitionTimerRef.current);
+    transitionTimerRef.current = 0;
+    wheelDeltaRef.current = 0;
+    transitioningRef.current = false;
+  }, []);
+
+  const handleNavigate = useCallback(
+    (sectionId: PortfolioSectionId) => {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+
+      transitioningRef.current = true;
+      window.clearTimeout(transitionTimerRef.current);
+      section.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+      transitionTimerRef.current = window.setTimeout(
+        finishTransition,
+        reducedMotion ? scrollSettleDelay : smoothScrollFallback,
+      );
+    },
+    [finishTransition, reducedMotion],
+  );
 
   useEffect(() => {
     let frameId = 0;
@@ -70,6 +104,7 @@ export function StellarExperience({ fieldNotes }: StellarExperienceProps) {
         window.innerHeight,
       );
 
+      activeSectionRef.current = settledSection;
       setActiveSection((current) =>
         current === settledSection ? current : settledSection,
       );
@@ -97,11 +132,64 @@ export function StellarExperience({ fieldNotes }: StellarExperienceProps) {
     const handleScrollEnd = () => {
       updateScrollProgress();
       commitSettledSection();
+      finishTransition();
     };
 
     const handleResize = () => {
       scheduleScrollUpdate();
       scheduleSettledSection();
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      if (
+        event.ctrlKey ||
+        Math.abs(event.deltaX) >= Math.abs(event.deltaY)
+      ) {
+        return;
+      }
+
+      if (transitioningRef.current) {
+        event.preventDefault();
+        return;
+      }
+
+      const inputDirection = event.deltaY > 0 ? 1 : -1;
+      const currentSection = document.getElementById(
+        activeSectionRef.current,
+      );
+      if (currentSection) {
+        const bounds = currentSection.getBoundingClientRect();
+        if (
+          canScrollWithinSection(
+            { top: bounds.top, height: bounds.height },
+            window.innerHeight,
+            inputDirection,
+          )
+        ) {
+          return;
+        }
+      }
+
+      event.preventDefault();
+      const deltaScale =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? 16
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? window.innerHeight
+            : 1;
+      wheelDeltaRef.current += event.deltaY * deltaScale;
+      if (Math.abs(wheelDeltaRef.current) < wheelDeltaThreshold) return;
+
+      const direction = wheelDeltaRef.current > 0 ? 1 : -1;
+      wheelDeltaRef.current = 0;
+      const destination = findAdjacentSection(
+        portfolioSections,
+        activeSectionRef.current,
+        direction,
+      );
+      if (destination === activeSectionRef.current) return;
+
+      handleNavigate(destination);
     };
 
     document.documentElement.classList.add("portfolio-scroll-snap");
@@ -110,26 +198,19 @@ export function StellarExperience({ fieldNotes }: StellarExperienceProps) {
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("scrollend", handleScrollEnd);
     window.addEventListener("resize", handleResize);
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       document.documentElement.classList.remove("portfolio-scroll-snap");
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("scrollend", handleScrollEnd);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("wheel", handleWheel);
       window.clearTimeout(settleTimer);
+      finishTransition();
       if (frameId !== 0) window.cancelAnimationFrame(frameId);
     };
-  }, []);
-
-  const handleNavigate = useCallback(
-    (sectionId: PortfolioSectionId) => {
-      document.getElementById(sectionId)?.scrollIntoView({
-        behavior: reducedMotion ? "auto" : "smooth",
-        block: "start",
-      });
-    },
-    [reducedMotion],
-  );
+  }, [finishTransition, handleNavigate]);
 
   return (
     <main className="observatory-shell">

@@ -76,10 +76,17 @@ test("renders every navigation destination as a semantic section", async () => {
   assert.match(css, /scroll-snap-stop:\s*always/);
   assert.match(experienceSource, /"scrollend"/);
   assert.match(experienceSource, /commitSettledSection/);
+  assert.match(experienceSource, /"wheel", handleWheel, \{ passive: false \}/);
+  assert.match(experienceSource, /handleNavigate\(destination\)/);
 });
 
 test("calculates bounded scroll progress and the closest settled section", async () => {
-  const { calculateScrollProgress, findClosestSection } = await import(
+  const {
+    canScrollWithinSection,
+    calculateScrollProgress,
+    findAdjacentSection,
+    findClosestSection,
+  } = await import(
     new URL("../app/components/scrollSnapMath.ts", import.meta.url).href
   );
   const sections = [
@@ -92,6 +99,21 @@ test("calculates bounded scroll progress and the closest settled section", async
   assert.equal(calculateScrollProgress(-20, 4_500, 900), 0);
   assert.equal(calculateScrollProgress(8_000, 4_500, 900), 1);
   assert.equal(findClosestSection(sections, 900), "about");
+  assert.equal(findAdjacentSection(sections, "about", 1), "projects");
+  assert.equal(findAdjacentSection(sections, "about", -1), "origin");
+  assert.equal(findAdjacentSection(sections, "origin", -1), "origin");
+  assert.equal(
+    canScrollWithinSection({ top: 0, height: 1_200 }, 900, 1),
+    true,
+  );
+  assert.equal(
+    canScrollWithinSection({ top: -300, height: 1_200 }, 900, 1),
+    false,
+  );
+  assert.equal(
+    canScrollWithinSection({ top: -300, height: 1_200 }, 900, -1),
+    true,
+  );
 });
 
 test("builds the field-notes index and dynamic article routes from Markdown", async () => {

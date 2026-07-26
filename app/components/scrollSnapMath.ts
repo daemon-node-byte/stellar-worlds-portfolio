@@ -6,6 +6,10 @@ export type SectionViewport = {
   height: number;
 };
 
+type SectionReference = {
+  id: PortfolioSectionId;
+};
+
 export function calculateScrollProgress(
   scrollY: number,
   scrollHeight: number,
@@ -36,4 +40,34 @@ export function findClosestSection(
   }
 
   return closestSection;
+}
+
+export function findAdjacentSection(
+  sections: readonly SectionReference[],
+  currentSection: PortfolioSectionId,
+  direction: -1 | 1,
+) {
+  const currentIndex = sections.findIndex(
+    (section) => section.id === currentSection,
+  );
+  if (currentIndex === -1) return sections[0]?.id ?? "origin";
+
+  const nextIndex = Math.min(
+    Math.max(currentIndex + direction, 0),
+    sections.length - 1,
+  );
+  return sections[nextIndex]?.id ?? currentSection;
+}
+
+export function canScrollWithinSection(
+  section: Pick<SectionViewport, "top" | "height">,
+  viewportHeight: number,
+  direction: -1 | 1,
+) {
+  const alignmentTolerance = 2;
+  const sectionBottom = section.top + section.height;
+
+  return direction > 0
+    ? sectionBottom > viewportHeight + alignmentTolerance
+    : section.top < -alignmentTolerance;
 }

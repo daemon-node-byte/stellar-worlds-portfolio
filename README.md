@@ -8,6 +8,7 @@ About, Projects, Field Notes, and Contact.
 
 - A full-system opening view followed by snap-aligned, scene-to-scene camera
   approaches that chase each moving world
+- Wheel and trackpad gestures use the same paced transition as header navigation
 - A central textured solar entity with animated plasma, a particle corona, and
   the scene's inverse-square, shadow-casting light
 - Five planets in distinct inclined orbits, with original 2K equirectangular
