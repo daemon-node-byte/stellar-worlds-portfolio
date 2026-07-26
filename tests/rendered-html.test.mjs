@@ -83,6 +83,39 @@ test("renders every navigation destination as a semantic section", async () => {
   assert.match(experienceSource, /handleNavigate\(destination\)/);
 });
 
+test("contains narrow-screen content without sacrificing mobile navigation", async () => {
+  const css = await readFile(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  const narrowLayout = css.slice(
+    css.indexOf("@media (max-width: 600px)"),
+    css.indexOf("@media (prefers-reduced-motion: reduce)"),
+  );
+
+  assert.match(css, /\.observatory-shell\s*\{[^}]*overflow-x:\s*clip/s);
+  assert.match(
+    css,
+    /\.project-card__title h3\s*\{[^}]*overflow-wrap:\s*anywhere/s,
+  );
+  assert.match(
+    css,
+    /\.field-note-prose code\s*\{[^}]*overflow-wrap:\s*anywhere/s,
+  );
+  assert.match(
+    css,
+    /\.field-note-prose pre,[\s\S]*?overflow-x:\s*auto/s,
+  );
+  assert.match(narrowLayout, /\.portfolio-section\s*\{[^}]*0\.75rem/s);
+  assert.match(narrowLayout, /\.notes-list article\s*\{[^}]*minmax\(0,\s*1fr\)/s);
+  assert.match(narrowLayout, /\.field-notes-footer\s*\{[^}]*flex-direction:\s*column/s);
+  assert.match(narrowLayout, /@media \(max-width:\s*380px\)/);
+  assert.match(
+    narrowLayout,
+    /\.site-header nav button span\s*\{[^}]*display:\s*none/s,
+  );
+});
+
 test("calculates bounded scroll progress and the closest settled section", async () => {
   const {
     canScrollWithinSection,

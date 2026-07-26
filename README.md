@@ -20,7 +20,7 @@ About, Projects, Field Notes, and Contact.
   and orbital debris
 - Bloom, chromatic aberration, grain, vignette, and solar glare post-processing
 - Responsive editorial interface with keyboard navigation and reduced-motion
-  support
+  support, including dedicated 600px and 380px layouts for narrow phones
 - Section content enters only after its destination has settled in the viewport
 - File-driven Markdown field notes with YAML front matter and shareable routes
 - Real project, source-code, contact, and social profile links

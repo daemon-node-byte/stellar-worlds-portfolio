@@ -49,6 +49,7 @@ button {
 
 .observatory-shell {
   min-height: 100%;
+  overflow-x: clip;
   background:
     radial-gradient(circle at 80% 12%, rgb(216 255 69 / 7%), transparent 28%),
     var(--ink);
@@ -255,6 +256,7 @@ button {
 
 .section-content {
   width: min(100%, 42rem);
+  min-width: 0;
   opacity: 0.34;
   transform: translateY(2.5rem);
   transition:
@@ -535,6 +537,7 @@ h2 {
 
 .project-card {
   display: flex;
+  min-width: 0;
   min-height: 24rem;
   flex-direction: column;
   justify-content: space-between;
@@ -584,10 +587,12 @@ h2 {
 }
 
 .project-card__title h3 {
+  min-width: 0;
   margin-bottom: 1rem;
   font-size: clamp(2rem, 3.2vw, 3.3rem);
   font-weight: 500;
   letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
@@ -707,10 +712,12 @@ h2 {
 }
 
 .notes-list h3 {
+  min-width: 0;
   margin: 0;
   font-size: clamp(1.15rem, 2vw, 1.65rem);
   font-weight: 450;
   letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
 }
 
 .notes-list article > span {
@@ -780,6 +787,11 @@ h2 {
 .contact-link span:last-child {
   font-size: 1.5rem;
   transition: transform 200ms ease;
+}
+
+.contact-link span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .contact-link:hover span:last-child {
@@ -1093,6 +1105,7 @@ h2 {
   font-size: clamp(1.7rem, 3vw, 3rem);
   letter-spacing: -0.045em;
   line-height: 1;
+  overflow-wrap: anywhere;
   text-transform: none;
 }
 
@@ -1130,6 +1143,7 @@ h2 {
   margin-bottom: 1.6rem;
   font-size: clamp(3rem, 7vw, 6.8rem);
   line-height: 0.9;
+  overflow-wrap: anywhere;
   text-transform: none;
 }
 
@@ -1158,6 +1172,7 @@ h2 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.05rem, 1.5vw, 1.18rem);
   line-height: 1.85;
+  overflow-wrap: break-word;
 }
 
 .field-note-prose h2 {
@@ -1189,7 +1204,22 @@ h2 {
 
 .field-note-prose a {
   color: var(--acid);
+  overflow-wrap: anywhere;
   text-underline-offset: 0.2em;
+}
+
+.field-note-prose pre,
+.field-note-prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.field-note-prose img,
+.field-note-prose video,
+.field-note-prose iframe {
+  max-width: 100%;
+  height: auto;
 }
 
 .field-note-prose code {
@@ -1198,6 +1228,7 @@ h2 {
   color: var(--acid);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.88em;
+  overflow-wrap: anywhere;
 }
 
 .field-notes-footer {
@@ -1339,7 +1370,8 @@ h2 {
     right: 1rem;
     bottom: 1rem;
     left: 1rem;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0;
     padding: 0.95rem 0.7rem;
     border: 1px solid var(--line);
@@ -1348,10 +1380,14 @@ h2 {
   }
 
   .site-header nav button {
+    min-width: 0;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.2rem;
+    padding: 0 0.25rem;
     font-size: 0.52rem;
+    text-align: center;
   }
 
   .site-header nav button::after {
@@ -1410,6 +1446,17 @@ h2 {
     gap: 0.4rem;
   }
 
+  .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .section-heading h2 {
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
   .project-grid {
     grid-template-columns: 1fr;
   }
@@ -1444,13 +1491,120 @@ h2 {
     display: none;
   }
 
+  .site-header {
+    padding: 0.75rem;
+  }
+
+  .site-header nav {
+    right: 0.75rem;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    left: 0.75rem;
+    padding: 0.8rem 0.3rem;
+  }
+
+  .site-header nav button {
+    gap: 0.12rem;
+    padding: 0 0.12rem;
+    font-size: 0.48rem;
+    letter-spacing: 0.08em;
+  }
+
+  .portfolio-section {
+    padding:
+      6rem 0.75rem
+      calc(8rem + env(safe-area-inset-bottom));
+  }
+
+  .section-content,
+  .section-content--left,
+  .section-content--right {
+    padding: 1rem;
+  }
+
+  .section-content--hero {
+    padding: 0 0.25rem;
+  }
+
+  h1 {
+    max-width: 100%;
+    font-size: clamp(2.2rem, 13.5vw, 3.8rem);
+    letter-spacing: -0.055em;
+    overflow-wrap: anywhere;
+  }
+
+  h2 {
+    max-width: 100%;
+    font-size: clamp(2.2rem, 11.5vw, 4.25rem);
+    letter-spacing: -0.055em;
+    overflow-wrap: anywhere;
+  }
+
+  .eyebrow {
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+    margin-bottom: 1rem;
+    font-size: 0.55rem;
+    line-height: 1.4;
+  }
+
+  .eyebrow::before {
+    width: 1.25rem;
+    flex: 0 0 auto;
+  }
+
   .hero-footer {
     flex-direction: column;
-    gap: 1.4rem;
+    gap: 1rem;
+  }
+
+  .section-intro,
+  .section-copy,
+  .contact-copy {
+    font-size: 0.92rem;
+  }
+
+  .section-heading h2 {
+    margin-bottom: 1.2rem;
+  }
+
+  .project-card {
+    min-height: 0;
+    padding: 1rem;
+  }
+
+  .project-card__main-link {
+    margin: 1.35rem 0;
+  }
+
+  .project-card__title {
+    gap: 0.65rem;
+  }
+
+  .project-card__title h3 {
+    font-size: clamp(1.65rem, 9vw, 2.35rem);
+  }
+
+  .project-card__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .project-card__actions a {
+    width: 100%;
+    justify-content: center;
   }
 
   .notes-list article {
-    grid-template-columns: 5.5rem 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: 1rem 0;
+  }
+
+  .notes-list article > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
   }
 
   .notes-list article > span {
@@ -1458,37 +1612,143 @@ h2 {
   }
 
   .contact-link {
-    font-size: 0.62rem;
+    gap: 0.75rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
   }
 
   .resume-actions {
     grid-template-columns: 1fr;
   }
 
+  .resume-action {
+    min-width: 0;
+  }
+
   .social-links a {
     padding: 0.7rem;
+  }
+
+  .contact-meta {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-align: center;
+  }
+
+  .field-notes-header {
+    padding: 0.75rem;
   }
 
   .field-notes-wordmark > span:last-child {
     display: none;
   }
 
+  .field-notes-index,
+  .field-note-document {
+    width: min(calc(100% - 1.5rem), 62rem);
+    padding-bottom: 3.5rem;
+  }
+
+  .field-notes-index {
+    padding-top: 4.5rem;
+  }
+
+  .field-notes-index h1 {
+    max-width: 100%;
+    font-size: clamp(2.8rem, 15vw, 4.5rem);
+  }
+
   .field-notes-index__list > a {
     grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 1.2rem 0;
   }
 
   .field-notes-index__list > a > span:last-child {
     display: none;
   }
 
+  .field-notes-index__list h2 {
+    font-size: clamp(1.45rem, 8vw, 2.1rem);
+  }
+
+  .field-note-document {
+    padding-top: 3rem;
+  }
+
+  .field-note-document__index-link {
+    margin-bottom: 2rem;
+  }
+
   .field-note-document > article {
-    padding: 1.3rem;
+    padding: 1rem;
+  }
+
+  .field-note-document h1 {
+    max-width: 100%;
+    font-size: clamp(2.25rem, 11vw, 3.5rem);
+  }
+
+  .field-note-document__meta {
+    flex-wrap: wrap;
+    gap: 0.6rem 1.2rem;
+  }
+
+  .field-note-prose ul,
+  .field-note-prose ol {
+    padding-left: 1.25rem;
   }
 
   .field-notes-footer {
+    flex-direction: column;
     align-items: start;
     gap: 1.5rem;
     padding: 1.5rem 1.2rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-header nav {
+    right: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .site-header nav button {
+    font-size: 0.46rem;
+  }
+
+  .site-header nav button span {
+    display: none;
+  }
+
+  .portfolio-section {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .section-content,
+  .section-content--left,
+  .section-content--right {
+    padding: 0.85rem;
+  }
+
+  .section-content--hero {
+    padding: 0 0.15rem;
+  }
+
+  .eyebrow::before {
+    width: 0.8rem;
+  }
+
+  .social-links {
+    grid-template-columns: 1fr;
+  }
+
+  .field-notes-return {
+    gap: 0.35rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.08em;
   }
 }
 
