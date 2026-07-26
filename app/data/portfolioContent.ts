@@ -101,8 +101,8 @@ export const socialProfiles: readonly {
   {
     id: "facebook",
     label: "Facebook",
-    handle: "joshmclain45",
-    url: "https://www.facebook.com/joshmclain45",
+    handle: "josh codes",
+    url: "https://www.facebook.com/profile.php?id=61575475723755",
   },
   {
     id: "x",
