@@ -118,6 +118,34 @@ test("contains narrow-screen content without sacrificing mobile navigation", asy
   );
 });
 
+test("keeps desktop project cards compact enough to reveal the scene", async () => {
+  const css = await readFile(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  const desktopProjectLayout = css.slice(
+    css.indexOf("@media (min-width: 901px)"),
+    css.indexOf("@media (max-width: 900px)"),
+  );
+
+  assert.match(
+    desktopProjectLayout,
+    /\.section-content--wide\s*\{[^}]*max-width:\s*64rem/s,
+  );
+  assert.match(
+    desktopProjectLayout,
+    /\.project-card\s*\{[^}]*min-height:\s*19\.5rem/s,
+  );
+  assert.match(
+    desktopProjectLayout,
+    /\.project-card\s*\{[^}]*background:\s*rgb\(3 8 7 \/ 68%\)/s,
+  );
+  assert.match(
+    desktopProjectLayout,
+    /\.project-card__title h3\s*\{[^}]*2\.15rem/s,
+  );
+});
+
 test("calculates bounded scroll progress and the closest settled section", async () => {
   const {
     canScrollWithinSection,
