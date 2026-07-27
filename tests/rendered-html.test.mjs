@@ -48,6 +48,9 @@ test("server-renders Josh McLain's portfolio and site metadata", async () => {
   assert.match(html, /react-icons|Source code/i);
   assert.match(html, /\/projects\/astarot/);
   assert.match(html, /Orbital dossier/i);
+  assert.match(html, /Skills constellation/i);
+  assert.match(html, /TypeScript/);
+  assert.match(html, /AI systems/i);
   assert.match(html, /View résumé/);
   assert.match(html, /\/resume\/Josh-McLain-Resume\.pdf/);
   assert.match(html, /\/resume\/Josh-McLain-Resume\.docx/);
@@ -143,6 +146,77 @@ test("keeps desktop project cards compact enough to reveal the scene", async () 
   assert.match(
     desktopProjectLayout,
     /\.project-card__title h3\s*\{[^}]*2\.15rem/s,
+  );
+});
+
+test("renders an accessible interactive skills constellation", async () => {
+  const [html, componentSource, css] = await Promise.all([
+    render().then((response) => response.text()),
+    readFile(
+      new URL("../app/components/SkillsConstellation.tsx", import.meta.url),
+      "utf8",
+    ),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const tabletLayout = css.slice(
+    css.indexOf("@media (max-width: 900px)"),
+    css.indexOf("@media (max-width: 600px)"),
+  );
+  const mobileLayout = css.slice(
+    css.indexOf("@media (max-width: 600px)"),
+    css.indexOf("@media (prefers-reduced-motion: reduce)"),
+  );
+
+  assert.match(html, /Interactive technology skill map/i);
+  assert.match(componentSource, /useState<SkillConstellationNodeId>/);
+  assert.match(componentSource, /aria-pressed=/);
+  assert.match(componentSource, /onPointerEnter=/);
+  assert.match(componentSource, /onFocus=/);
+  assert.match(componentSource, /aria-live="polite"/);
+  assert.match(
+    css,
+    /\.section-content--about\s*\{[^}]*display:\s*grid/s,
+  );
+  assert.match(
+    tabletLayout,
+    /\.section-content--about\s*\{[^}]*display:\s*block/s,
+  );
+  assert.match(
+    mobileLayout,
+    /\.section-content--about h2\s*\{[^}]*2\.2rem/s,
+  );
+  assert.match(css, /@keyframes constellation-core-pulse/);
+});
+
+test("calculates constellation connections across the fixed map aspect", async () => {
+  const {
+    calculateConstellationConnection,
+    skillConstellationCenter,
+  } = await import(
+    new URL(
+      "../app/components/skillConstellationMath.ts",
+      import.meta.url,
+    ).href
+  );
+
+  assert.deepEqual(
+    calculateConstellationConnection(skillConstellationCenter),
+    { angle: 0, length: 0 },
+  );
+  assert.deepEqual(
+    calculateConstellationConnection({ x: 80, y: 48 }),
+    { angle: 0, length: 30 },
+  );
+
+  const downwardConnection = calculateConstellationConnection({
+    x: 50,
+    y: 64.5,
+  });
+  assert.ok(Math.abs(downwardConnection.angle - 90) < 0.000_001);
+  assert.ok(Math.abs(downwardConnection.length - 10) < 0.000_001);
+  assert.throws(
+    () => calculateConstellationConnection({ x: 50, y: 60 }, undefined, 0),
+    /aspect ratio must be positive/i,
   );
 });
 

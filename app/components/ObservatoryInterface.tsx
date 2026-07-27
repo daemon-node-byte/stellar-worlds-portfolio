@@ -8,6 +8,7 @@ import {
   type PortfolioSectionId,
 } from "../data/portfolioContent";
 import { ProjectCard } from "./ProjectCard";
+import { SkillsConstellation } from "./SkillsConstellation";
 import { SocialLinks } from "./SocialLinks";
 
 type ObservatoryInterfaceProps = {
@@ -51,63 +52,67 @@ function OriginSection({
 
 function AboutSection() {
   return (
-    <div className="section-content section-content--left">
-      <p className="eyebrow">
-        <span>Specimen 02</span>
-        Virelia / About
-      </p>
-      <h2>Full-stack thinking. Front-end craft.</h2>
-      <div className="section-copy">
-        <p>
-          I&apos;m a Phoenix-based software engineer with five-plus years of
-          professional experience building across the stack and mentoring other
-          developers.
+    <div className="section-content section-content--left section-content--about">
+      <div className="about-profile">
+        <p className="eyebrow">
+          <span>Specimen 02</span>
+          Virelia / About
         </p>
-        <p>
-          I turn complex ideas into maintainable web products—combining product
-          judgment, dependable engineering, and a visual point of view.
-        </p>
+        <h2>Full-stack thinking. Front-end craft.</h2>
+        <div className="section-copy">
+          <p>
+            I&apos;m a Phoenix-based software engineer with five-plus years of
+            professional experience building across the stack and mentoring
+            other developers.
+          </p>
+          <p>
+            I turn complex ideas into maintainable web products—combining
+            product judgment, dependable engineering, and a visual point of
+            view.
+          </p>
+        </div>
+        <div className="resume-actions" aria-label="Résumé actions">
+          <a
+            className="resume-action resume-action--primary"
+            href="/resume/Josh-McLain-Resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="View Josh McLain's résumé as a PDF in a new tab"
+          >
+            <span>
+              <span className="resume-action__meta">Résumé / PDF</span>
+              View résumé
+            </span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a
+            className="resume-action"
+            href="/resume/Josh-McLain-Resume.docx"
+            download
+          >
+            <span>
+              <span className="resume-action__meta">Original / DOCX</span>
+              Download copy
+            </span>
+            <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+        <dl className="capability-list">
+          <div>
+            <dt>01</dt>
+            <dd>Full-stack web applications</dd>
+          </div>
+          <div>
+            <dt>02</dt>
+            <dd>Interactive interfaces and 3D</dd>
+          </div>
+          <div>
+            <dt>03</dt>
+            <dd>Automation and AI systems</dd>
+          </div>
+        </dl>
       </div>
-      <div className="resume-actions" aria-label="Résumé actions">
-        <a
-          className="resume-action resume-action--primary"
-          href="/resume/Josh-McLain-Resume.pdf"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="View Josh McLain's résumé as a PDF in a new tab"
-        >
-          <span>
-            <span className="resume-action__meta">Résumé / PDF</span>
-            View résumé
-          </span>
-          <span aria-hidden="true">↗</span>
-        </a>
-        <a
-          className="resume-action"
-          href="/resume/Josh-McLain-Resume.docx"
-          download
-        >
-          <span>
-            <span className="resume-action__meta">Original / DOCX</span>
-            Download copy
-          </span>
-          <span aria-hidden="true">↓</span>
-        </a>
-      </div>
-      <dl className="capability-list">
-        <div>
-          <dt>01</dt>
-          <dd>Full-stack web applications</dd>
-        </div>
-        <div>
-          <dt>02</dt>
-          <dd>Interactive interfaces and 3D</dd>
-        </div>
-        <div>
-          <dt>03</dt>
-          <dd>Automation and AI systems</dd>
-        </div>
-      </dl>
+      <SkillsConstellation />
     </div>
   );
 }

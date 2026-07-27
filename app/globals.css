@@ -401,6 +401,23 @@ h2 {
   margin-left: auto;
 }
 
+.section-content--about {
+  display: grid;
+  width: min(100%, 76rem);
+  grid-template-columns: minmax(0, 1.12fr) minmax(20rem, 0.88fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 6rem);
+}
+
+.about-profile {
+  min-width: 0;
+}
+
+.section-content--about h2 {
+  max-width: 9ch;
+  font-size: clamp(3.4rem, 5.6vw, 6rem);
+}
+
 .section-copy {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -507,6 +524,332 @@ h2 {
 
 .capability-list dd {
   color: var(--fog);
+}
+
+.skills-constellation {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(145deg, rgb(8 19 15 / 66%), rgb(3 8 7 / 48%));
+  box-shadow:
+    inset 0 0 4rem rgb(216 255 69 / 3%),
+    0 2rem 6rem rgb(0 0 0 / 24%);
+  backdrop-filter: blur(9px);
+}
+
+.skills-constellation__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--line-quiet);
+}
+
+.skills-constellation__header span,
+.skills-constellation__header p,
+.skills-constellation__detail-meta,
+.skills-constellation__detail li {
+  font-family: var(--font-geist-mono), monospace;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.skills-constellation__header span {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--acid);
+  font-size: 0.48rem;
+}
+
+.skills-constellation__header h3 {
+  margin: 0;
+  font-size: clamp(1.1rem, 1.7vw, 1.45rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.skills-constellation__header p {
+  margin: 0.15rem 0 0;
+  color: var(--fog);
+  font-size: 0.45rem;
+}
+
+.skills-constellation__map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.65;
+  margin: 0.8rem 0 0.5rem;
+  isolation: isolate;
+}
+
+.skills-constellation__orbit {
+  position: absolute;
+  z-index: -1;
+  border: 1px dashed rgb(216 255 69 / 14%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.skills-constellation__orbit--outer {
+  inset: 11% 5%;
+  animation: constellation-orbit 42s linear infinite;
+}
+
+.skills-constellation__orbit--inner {
+  inset: 23% 26%;
+  border-color: rgb(237 240 220 / 10%);
+  animation: constellation-orbit-reverse 31s linear infinite;
+}
+
+.skills-constellation__connection {
+  position: absolute;
+  z-index: -1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgb(216 255 69 / 32%),
+    rgb(154 166 155 / 9%)
+  );
+  pointer-events: none;
+  transform-origin: left center;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.skills-constellation__connection.is-active {
+  background: linear-gradient(
+    to right,
+    rgb(216 255 69 / 90%),
+    rgb(216 255 69 / 32%)
+  );
+  box-shadow: 0 0 0.8rem rgb(216 255 69 / 22%);
+}
+
+.skills-constellation__core {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 4rem;
+  height: 4rem;
+  place-items: center;
+  border: 1px solid rgb(216 255 69 / 34%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(216 255 69 / 24%),
+    rgb(3 8 7 / 88%) 58%
+  );
+  color: var(--bone);
+  transform: translate(-50%, -50%);
+}
+
+.skills-constellation__core::before,
+.skills-constellation__core::after {
+  position: absolute;
+  border: 1px solid rgb(216 255 69 / 12%);
+  border-radius: 50%;
+  content: "";
+  inset: -0.45rem;
+}
+
+.skills-constellation__core::after {
+  inset: -0.9rem;
+  border-style: dashed;
+  animation: constellation-orbit 18s linear infinite;
+}
+
+.skills-constellation__core > span {
+  width: 0.52rem;
+  height: 0.52rem;
+  border-radius: 50%;
+  background: var(--acid);
+  box-shadow:
+    0 0 0.65rem var(--acid),
+    0 0 1.4rem rgb(216 255 69 / 42%);
+  animation: constellation-core-pulse 2.8s ease-in-out infinite;
+}
+
+.skills-constellation__core small {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  color: var(--fog);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.skills-constellation__node {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fog);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.skills-constellation__node::before {
+  position: absolute;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  content: "";
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.skills-constellation__node:hover::before,
+.skills-constellation__node:focus-visible::before,
+.skills-constellation__node.is-active::before {
+  border-color: rgb(216 255 69 / 34%);
+  transform: scale(1.2);
+}
+
+.skills-constellation__node:focus-visible {
+  outline: 1px solid var(--acid);
+  outline-offset: 0.2rem;
+}
+
+.skills-constellation__star {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--fog);
+  box-shadow: 0 0 0.45rem rgb(154 166 155 / 42%);
+  animation: constellation-star 3.1s var(--node-delay) ease-in-out infinite;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.skills-constellation__node:hover .skills-constellation__star,
+.skills-constellation__node:focus-visible .skills-constellation__star,
+.skills-constellation__node.is-active .skills-constellation__star {
+  background: var(--acid);
+  box-shadow:
+    0 0 0.65rem var(--acid),
+    0 0 1.1rem rgb(216 255 69 / 34%);
+  transform: scale(1.28);
+}
+
+.skills-constellation__node-label {
+  position: absolute;
+  top: calc(50% + 0.85rem);
+  color: inherit;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.46rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 180ms ease;
+}
+
+.skills-constellation__node:hover,
+.skills-constellation__node:focus-visible,
+.skills-constellation__node.is-active {
+  color: var(--bone);
+}
+
+.skills-constellation__detail {
+  min-height: 8.7rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line-quiet);
+  background: rgb(3 8 7 / 58%);
+}
+
+.skills-constellation__detail-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+  color: var(--acid);
+  font-size: 0.45rem;
+}
+
+.skills-constellation__detail h3 {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.skills-constellation__detail > p {
+  margin: 0;
+  color: var(--fog);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.skills-constellation__detail ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skills-constellation__detail li {
+  padding: 0.28rem 0.4rem;
+  border: 1px solid rgb(216 255 69 / 13%);
+  color: #c4ccba;
+  font-size: 0.42rem;
+}
+
+@keyframes constellation-orbit {
+  from {
+    transform: rotate(-8deg);
+  }
+  to {
+    transform: rotate(352deg);
+  }
+}
+
+@keyframes constellation-orbit-reverse {
+  from {
+    transform: rotate(9deg);
+  }
+  to {
+    transform: rotate(-351deg);
+  }
+}
+
+@keyframes constellation-core-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.84);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes constellation-star {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .section-content--wide {
@@ -2204,6 +2547,15 @@ h2 {
     gap: 0.4rem;
   }
 
+  .section-content--about {
+    display: block;
+  }
+
+  .skills-constellation {
+    width: min(100%, 38rem);
+    margin: 2rem auto 0;
+  }
+
   .section-heading {
     flex-direction: column;
     align-items: flex-start;
@@ -2370,6 +2722,36 @@ h2 {
 
   .section-heading h2 {
     margin-bottom: 1.2rem;
+  }
+
+  .section-content--about h2 {
+    font-size: clamp(2.2rem, 11.5vw, 4.25rem);
+  }
+
+  .skills-constellation {
+    padding: 0.8rem;
+  }
+
+  .skills-constellation__header {
+    align-items: center;
+  }
+
+  .skills-constellation__map {
+    margin-top: 0.55rem;
+  }
+
+  .skills-constellation__node-label {
+    font-size: 0.42rem;
+    letter-spacing: 0.05em;
+  }
+
+  .skills-constellation__detail {
+    min-height: 0;
+    padding: 0.75rem;
+  }
+
+  .skills-constellation__detail-meta {
+    gap: 0.5rem;
   }
 
   .project-card {
