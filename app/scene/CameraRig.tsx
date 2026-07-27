@@ -12,6 +12,7 @@ import {
   calculateCameraOrbitAngle,
   type CameraOrbitMotion,
 } from "./cameraOrbitMath";
+import { calculateSunwardCameraOffset } from "./cameraLandingMath";
 
 type OverviewCameraStop = {
   id: "overview";
@@ -25,7 +26,7 @@ type PlanetCameraStop = CameraOrbitMotion & {
   id: PlanetId;
   progress: number;
   trailing: number;
-  radial: number;
+  sunward: number;
   height: number;
   fov: number;
 };
@@ -44,7 +45,7 @@ const cameraStops: readonly CameraStop[] = [
     id: "signal",
     progress: 0.1,
     trailing: 4.8,
-    radial: 3.4,
+    sunward: 3.4,
     height: 1.1,
     fov: 44,
     orbitArc: 0.18,
@@ -55,7 +56,7 @@ const cameraStops: readonly CameraStop[] = [
     id: "virelia",
     progress: 0.25,
     trailing: 5.4,
-    radial: 3.8,
+    sunward: 3.8,
     height: 1.35,
     fov: 44,
     orbitArc: 0.22,
@@ -66,7 +67,7 @@ const cameraStops: readonly CameraStop[] = [
     id: "khepri",
     progress: 0.5,
     trailing: 5.1,
-    radial: 3.4,
+    sunward: 3.4,
     height: 1.2,
     fov: 43,
     orbitArc: 0.16,
@@ -77,7 +78,7 @@ const cameraStops: readonly CameraStop[] = [
     id: "calyx",
     progress: 0.75,
     trailing: 5.8,
-    radial: 4.1,
+    sunward: 4.1,
     height: 1.5,
     fov: 43,
     orbitArc: 0.2,
@@ -88,7 +89,7 @@ const cameraStops: readonly CameraStop[] = [
     id: "nox",
     progress: 1,
     trailing: 5,
-    radial: 3.5,
+    sunward: 3.5,
     height: 1.15,
     fov: 43,
     orbitArc: 0.18,
@@ -114,18 +115,18 @@ function resolveCameraStop(
   }
 
   const body = targets[stop.id];
-  radialDirection.copy(body.position);
-  if (radialDirection.lengthSq() < 0.0001) {
-    radialDirection.set(1, 0, 0);
-  } else {
-    radialDirection.normalize();
-  }
-
-  cameraOffset
-    .copy(body.tangent)
-    .multiplyScalar(-body.radius * stop.trailing)
-    .addScaledVector(radialDirection, body.radius * stop.radial);
-  cameraOffset.y += body.radius * stop.height;
+  calculateSunwardCameraOffset(
+    {
+      bodyPosition: body.position,
+      bodyTangent: body.tangent,
+      radius: body.radius,
+      trailing: stop.trailing,
+      sunward: stop.sunward,
+      height: stop.height,
+    },
+    radialDirection,
+    cameraOffset,
+  );
   cameraOffset.applyAxisAngle(
     THREE.Object3D.DEFAULT_UP,
     calculateCameraOrbitAngle(elapsedTime, stop, reducedMotion),

@@ -100,8 +100,8 @@ export function SpaceScene({
     <>
       <color attach="background" args={["#030807"]} />
       <fog attach="fog" args={["#030807", 62, 145]} />
-      <ambientLight color="#9ba38f" intensity={0.07} />
-      <hemisphereLight args={["#7e8871", "#020303", 0.1]} />
+      <ambientLight color="#a6ad9c" intensity={0.11} />
+      <hemisphereLight args={["#8f9b83", "#020303", 0.16]} />
 
       <StarField />
       <SolarEntity onGodRaysSourceChange={setGodRaysSource} />

@@ -320,6 +320,10 @@ test("builds a central-lighted orbital system with a moving chase camera", async
   assert.match(cameraSource, /body\.tangent/);
   assert.match(cameraSource, /applyAxisAngle/);
   assert.match(cameraSource, /calculateCameraOrbitAngle/);
+  assert.match(cameraSource, /calculateSunwardCameraOffset/);
+  assert.match(cameraSource, /sunward:/);
+  assert.match(sceneSource, /ambientLight[^>]+intensity=\{0\.11\}/);
+  assert.match(sceneSource, /hemisphereLight[^>]+0\.16/);
 });
 
 test("mounts safe solar glare and god rays around the brighter star", async () => {
@@ -376,4 +380,33 @@ test("keeps close-up camera orbit motion subtle and disables it for reduced moti
   const angle = calculateCameraOrbitAngle(12, motion, false);
   assert.ok(Math.abs(angle) <= motion.orbitArc);
   assert.equal(calculateCameraOrbitAngle(12, motion, true), 0);
+});
+
+test("lands close-up cameras on the star-facing side while retaining orbital trailing", async () => {
+  const { calculateSunwardCameraOffset } = await import(
+    new URL("../app/scene/cameraLandingMath.ts", import.meta.url).href
+  );
+  const THREE = await import("three");
+  const bodyPosition = new THREE.Vector3(10, 0, 0);
+  const bodyTangent = new THREE.Vector3(0, 0, 1);
+  const radialDirection = new THREE.Vector3();
+  const cameraOffset = new THREE.Vector3();
+
+  calculateSunwardCameraOffset(
+    {
+      bodyPosition,
+      bodyTangent,
+      radius: 2,
+      trailing: 4,
+      sunward: 3,
+      height: 1,
+    },
+    radialDirection,
+    cameraOffset,
+  );
+
+  const directionToStar = bodyPosition.clone().negate().normalize();
+  assert.ok(cameraOffset.dot(directionToStar) > 0);
+  assert.ok(cameraOffset.dot(bodyTangent) < 0);
+  assert.equal(cameraOffset.y, 2);
 });
