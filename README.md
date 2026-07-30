@@ -24,6 +24,8 @@ About, Projects, Field Notes, and Contact.
 - Responsive editorial interface with keyboard navigation and reduced-motion
   support, including dedicated 600px and 380px layouts for narrow phones
 - Section content enters only after its destination has settled in the viewport
+- Planet-specific interactions: résumé scanning, holographic project inspection,
+  intercepted-note decoding, and a keyboard-accessible communications beacon
 - File-driven Markdown field notes with YAML front matter and shareable routes
 - File-driven orbital project dossiers with shareable case-study routes
 - Real live-project, source-code, contact, and social profile links
@@ -37,9 +39,14 @@ About, Projects, Field Notes, and Contact.
 `app/components/` owns the document interface and scroll state. It depends on
 the portfolio content module and passes only a mutable scroll-progress contract
 to the scene. It does not contain rendering algorithms or persistence logic.
+Planetary interaction components own local, temporary state only; their shared
+timed sequence and beacon-coordinate math remain isolated from navigation.
 
 Example: add a destination label in `app/data/portfolioContent.ts`, then render
 its content in `ObservatoryInterface.tsx`.
+
+Example: add a new optional planetary interaction as a focused component and
+mount it inside its matching section without changing scene or scroll state.
 
 ### Scene layer
 

@@ -228,6 +228,7 @@ export function StellarExperience({
         fieldNotes={fieldNotes}
         onNavigate={handleNavigate}
         projects={projects}
+        reducedMotion={reducedMotion}
       />
     </main>
   );
