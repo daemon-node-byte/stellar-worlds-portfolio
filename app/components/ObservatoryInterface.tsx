@@ -7,15 +7,20 @@ import {
   portfolioSections,
   type PortfolioSectionId,
 } from "../data/portfolioContent";
+import { CommunicationsBeacon } from "./CommunicationsBeacon";
+import { ProfileScanner } from "./ProfileScanner";
+import { ProjectArtifactInspector } from "./ProjectArtifactInspector";
 import { ProjectCard } from "./ProjectCard";
 import { SkillsConstellation } from "./SkillsConstellation";
 import { SocialLinks } from "./SocialLinks";
+import { TransmissionDecoder } from "./TransmissionDecoder";
 
 type ObservatoryInterfaceProps = {
   activeSection: PortfolioSectionId;
   fieldNotes: readonly FieldNoteSummary[];
   onNavigate: (sectionId: PortfolioSectionId) => void;
   projects: readonly ProjectCaseStudySummary[];
+  reducedMotion: boolean;
 };
 
 function OriginSection({
@@ -50,7 +55,9 @@ function OriginSection({
   );
 }
 
-function AboutSection() {
+function AboutSection({
+  reducedMotion,
+}: Pick<ObservatoryInterfaceProps, "reducedMotion">) {
   return (
     <div className="section-content section-content--left section-content--about">
       <div className="about-profile">
@@ -97,20 +104,7 @@ function AboutSection() {
             <span aria-hidden="true">↓</span>
           </a>
         </div>
-        <dl className="capability-list">
-          <div>
-            <dt>01</dt>
-            <dd>Full-stack web applications</dd>
-          </div>
-          <div>
-            <dt>02</dt>
-            <dd>Interactive interfaces and 3D</dd>
-          </div>
-          <div>
-            <dt>03</dt>
-            <dd>Automation and AI systems</dd>
-          </div>
-        </dl>
+        <ProfileScanner reducedMotion={reducedMotion} />
       </div>
       <SkillsConstellation />
     </div>
@@ -129,6 +123,7 @@ function ProjectsSection({
         </p>
         <h2>Selected builds.</h2>
       </div>
+      <ProjectArtifactInspector projects={projects} />
       <div className="project-grid">
         {projects.map((project) => (
           <ProjectCard project={project} key={project.slug} />
@@ -143,7 +138,8 @@ function ProjectsSection({
 
 function NotesSection({
   fieldNotes,
-}: Pick<ObservatoryInterfaceProps, "fieldNotes">) {
+  reducedMotion,
+}: Pick<ObservatoryInterfaceProps, "fieldNotes" | "reducedMotion">) {
   return (
     <div className="section-content section-content--right">
       <p className="eyebrow">
@@ -151,6 +147,10 @@ function NotesSection({
         Calyx / Field notes
       </p>
       <h2>Notes from the edge.</h2>
+      <TransmissionDecoder
+        notes={fieldNotes}
+        reducedMotion={reducedMotion}
+      />
       <div className="notes-list">
         {fieldNotes.map((note, index) => (
           <Link href={`/field-notes/${note.slug}`} key={note.slug}>
@@ -172,7 +172,9 @@ function NotesSection({
   );
 }
 
-function ContactSection() {
+function ContactSection({
+  reducedMotion,
+}: Pick<ObservatoryInterfaceProps, "reducedMotion">) {
   return (
     <div className="section-content section-content--contact">
       <p className="eyebrow">
@@ -185,6 +187,7 @@ function ContactSection() {
         pulse? I&apos;m available for full-stack product work and select
         collaborations.
       </p>
+      <CommunicationsBeacon reducedMotion={reducedMotion} />
       <a
         className="contact-link"
         href="mailto:me@joshmclain.com?subject=Let%27s%20build%20something"
@@ -206,6 +209,7 @@ export function ObservatoryInterface({
   fieldNotes,
   onNavigate,
   projects,
+  reducedMotion,
 }: ObservatoryInterfaceProps) {
   return (
     <>
@@ -276,14 +280,21 @@ export function ObservatoryInterface({
             {section.id === "origin" ? (
               <OriginSection onNavigate={onNavigate} />
             ) : null}
-            {section.id === "about" ? <AboutSection /> : null}
+            {section.id === "about" ? (
+              <AboutSection reducedMotion={reducedMotion} />
+            ) : null}
             {section.id === "projects" ? (
               <ProjectsSection projects={projects} />
             ) : null}
             {section.id === "notes" ? (
-              <NotesSection fieldNotes={fieldNotes} />
+              <NotesSection
+                fieldNotes={fieldNotes}
+                reducedMotion={reducedMotion}
+              />
             ) : null}
-            {section.id === "contact" ? <ContactSection /> : null}
+            {section.id === "contact" ? (
+              <ContactSection reducedMotion={reducedMotion} />
+            ) : null}
           </section>
         ))}
       </div>

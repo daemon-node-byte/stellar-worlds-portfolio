@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
-async function render(pathname = "/") {
+async function render(pathname = "/", hostname = "portfolio.test") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set(
     "test",
@@ -11,11 +11,11 @@ async function render(pathname = "/") {
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request(new URL(pathname, "https://portfolio.test"), {
+    new Request(new URL(pathname, `https://${hostname}`), {
       headers: {
         accept: "text/html",
-        host: "portfolio.test",
-        "x-forwarded-host": "portfolio.test",
+        host: hostname,
+        "x-forwarded-host": hostname,
         "x-forwarded-proto": "https",
       },
     }),
@@ -30,6 +30,19 @@ async function render(pathname = "/") {
     },
   );
 }
+
+test("redirects www traffic to the canonical apex domain", async () => {
+  const response = await render(
+    "/projects/astarot?source=www",
+    "www.joshmclain.com",
+  );
+
+  assert.equal(response.status, 308);
+  assert.equal(
+    response.headers.get("location"),
+    "https://joshmclain.com/projects/astarot?source=www",
+  );
+});
 
 test("server-renders Josh McLain's portfolio and site metadata", async () => {
   const response = await render();
@@ -51,6 +64,10 @@ test("server-renders Josh McLain's portfolio and site metadata", async () => {
   assert.match(html, /Skills constellation/i);
   assert.match(html, /TypeScript/);
   assert.match(html, /AI systems/i);
+  assert.match(html, /Virelia biometric array/i);
+  assert.match(html, /Holographic inspection/i);
+  assert.match(html, /Intercepted transmissions/i);
+  assert.match(html, /Communications beacon/i);
   assert.match(html, /View résumé/);
   assert.match(html, /\/resume\/Josh-McLain-Resume\.pdf/);
   assert.match(html, /\/resume\/Josh-McLain-Resume\.docx/);
@@ -218,6 +235,118 @@ test("calculates constellation connections across the fixed map aspect", async (
     () => calculateConstellationConnection({ x: 50, y: 60 }, undefined, 0),
     /aspect ratio must be positive/i,
   );
+});
+
+test("renders four distinct accessible planetary interaction modes", async () => {
+  const [
+    html,
+    interfaceSource,
+    scannerSource,
+    artifactSource,
+    decoderSource,
+    beaconSource,
+    timerSource,
+    css,
+  ] = await Promise.all([
+    render().then((response) => response.text()),
+    readFile(
+      new URL("../app/components/ObservatoryInterface.tsx", import.meta.url),
+      "utf8",
+    ),
+    readFile(
+      new URL("../app/components/ProfileScanner.tsx", import.meta.url),
+      "utf8",
+    ),
+    readFile(
+      new URL(
+        "../app/components/ProjectArtifactInspector.tsx",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+    readFile(
+      new URL("../app/components/TransmissionDecoder.tsx", import.meta.url),
+      "utf8",
+    ),
+    readFile(
+      new URL("../app/components/CommunicationsBeacon.tsx", import.meta.url),
+      "utf8",
+    ),
+    readFile(
+      new URL("../app/components/useTimedInteraction.ts", import.meta.url),
+      "utf8",
+    ),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const mobileLayout = css.slice(
+    css.indexOf("@media (max-width: 600px)"),
+    css.indexOf("@media (max-width: 380px)"),
+  );
+  const narrowLayout = css.slice(
+    css.indexOf("@media (max-width: 380px)"),
+    css.indexOf("@media (prefers-reduced-motion: reduce)"),
+  );
+
+  assert.match(html, /Virelia biometric array/i);
+  assert.match(html, /Khepri artifact array/i);
+  assert.match(html, /Calyx listening post/i);
+  assert.match(html, /Nox relay control/i);
+  assert.match(html, /mailto:me@joshmclain\.com/i);
+  assert.match(interfaceSource, /reducedMotion=\{reducedMotion\}/);
+  assert.match(scannerSource, /aria-live="polite"/);
+  assert.match(artifactSource, /aria-pressed=/);
+  assert.match(artifactSource, /onPointerEnter=/);
+  assert.match(decoderSource, /Decode transmission/);
+  assert.match(decoderSource, /\/field-notes\/\$\{selectedNote\.slug\}/);
+  assert.match(beaconSource, /onPointerDown=/);
+  assert.match(beaconSource, /onKeyDown=/);
+  assert.match(timerSource, /window\.clearTimeout/);
+  assert.match(timerSource, /reducedMotionDuration/);
+  assert.match(css, /@keyframes profile-scan/);
+  assert.match(css, /@keyframes artifact-orbit/);
+  assert.match(css, /@keyframes transmission-wave/);
+  assert.match(css, /@keyframes beacon-launch/);
+  assert.match(
+    mobileLayout,
+    /\.project-artifact\s*\{[^}]*grid-template-columns:\s*1fr/s,
+  );
+  assert.match(
+    mobileLayout,
+    /\.transmission-decoder__output\s*\{[^}]*grid-template-columns:\s*1fr/s,
+  );
+  assert.match(
+    narrowLayout,
+    /\.profile-scanner__body,[\s\S]*?grid-template-columns:\s*1fr/s,
+  );
+});
+
+test("keeps pointer and keyboard beacon aiming inside its target", async () => {
+  const { calculateBeaconAim, nudgeBeaconAim } = await import(
+    new URL(
+      "../app/components/planetaryInteractionMath.ts",
+      import.meta.url,
+    ).href
+  );
+  const bounds = { left: 100, top: 200, width: 400, height: 200 };
+
+  assert.deepEqual(calculateBeaconAim(300, 300, bounds), { x: 50, y: 50 });
+  assert.deepEqual(calculateBeaconAim(20, 700, bounds), { x: 0, y: 100 });
+  assert.deepEqual(
+    calculateBeaconAim(300, 300, { ...bounds, width: 0 }),
+    { x: 50, y: 50 },
+  );
+  assert.deepEqual(nudgeBeaconAim({ x: 98, y: 2 }, "right"), {
+    x: 100,
+    y: 2,
+  });
+  assert.deepEqual(nudgeBeaconAim({ x: 98, y: 2 }, "up"), {
+    x: 98,
+    y: 0,
+  });
+  assert.deepEqual(nudgeBeaconAim({ x: 30, y: 40 }, "left", -5), {
+    x: 30,
+    y: 40,
+  });
 });
 
 test("calculates bounded scroll progress and the closest settled section", async () => {

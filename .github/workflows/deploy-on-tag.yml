@@ -1,0 +1,27 @@
+name: Deploy tagged release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cloudflare-production-deployment
+  cancel-in-progress: false
+
+jobs:
+  promote-release:
+    name: Promote release to Cloudflare
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Promote the tagged commit
+        run: ./scripts/promote-cloudflare-release.sh "$GITHUB_REF_NAME" "$GITHUB_SHA"

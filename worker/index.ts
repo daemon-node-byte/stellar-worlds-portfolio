@@ -2,6 +2,9 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 
+const CANONICAL_HOST = "joshmclain.com";
+const WWW_HOST = `www.${CANONICAL_HOST}`;
+
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
@@ -19,6 +22,16 @@ interface ExecutionContext {
   passThroughOnException(): void;
 }
 
+function createCanonicalHostRedirect(url: URL): Response | null {
+  if (url.hostname !== WWW_HOST) {
+    return null;
+  }
+
+  const canonicalUrl = new URL(url);
+  canonicalUrl.hostname = CANONICAL_HOST;
+  return Response.redirect(canonicalUrl.toString(), 308);
+}
+
 // Image security config. SVG sources with .svg extension auto-skip the
 // optimization endpoint on the client side (served directly, no proxy).
 // To route SVGs through the optimizer (with security headers), set
@@ -28,6 +41,11 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    const canonicalHostRedirect = createCanonicalHostRedirect(url);
+
+    if (canonicalHostRedirect) {
+      return canonicalHostRedirect;
+    }
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
