@@ -90,10 +90,25 @@ code.
 npm install
 npm run dev
 npm run build
-node --test tests/rendered-html.test.mjs
+node --test tests/*.test.mjs
 ```
 
 The project requires Node.js 22.13 or newer.
+
+## Production releases
+
+Production deployments are tag-based. Pushing or merging to `main` does not
+deploy the site. To release a tested commit, create and push a semantic-version
+tag:
+
+```bash
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+```
+
+The release workflow validates the tag, moves the automation-managed
+`cloudflare-production` branch to that exact commit, and lets Cloudflare Workers
+Builds deploy it. Do not push directly to `cloudflare-production`.
 
 ## Customizing the portfolio
 
