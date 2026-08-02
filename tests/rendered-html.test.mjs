@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
-async function render(pathname = "/") {
+async function render(pathname = "/", hostname = "portfolio.test") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set(
     "test",
@@ -11,11 +11,11 @@ async function render(pathname = "/") {
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request(new URL(pathname, "https://portfolio.test"), {
+    new Request(new URL(pathname, `https://${hostname}`), {
       headers: {
         accept: "text/html",
-        host: "portfolio.test",
-        "x-forwarded-host": "portfolio.test",
+        host: hostname,
+        "x-forwarded-host": hostname,
         "x-forwarded-proto": "https",
       },
     }),
@@ -30,6 +30,19 @@ async function render(pathname = "/") {
     },
   );
 }
+
+test("redirects www traffic to the canonical apex domain", async () => {
+  const response = await render(
+    "/projects/astarot?source=www",
+    "www.joshmclain.com",
+  );
+
+  assert.equal(response.status, 308);
+  assert.equal(
+    response.headers.get("location"),
+    "https://joshmclain.com/projects/astarot?source=www",
+  );
+});
 
 test("server-renders Josh McLain's portfolio and site metadata", async () => {
   const response = await render();
